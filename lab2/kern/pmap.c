@@ -90,16 +90,25 @@ boot_alloc(uint32_t n)
 	// to any kernel code or global variables.
 	if (!nextfree) {
 		extern char end[];
-		nextfree = ROUNDUP((char *) end, PGSIZE);
+		nextfree = ROUNDUP((char *) end, PGSIZE);	
 	}
+	//flh
+	//when the first time the boot_alloc is used, the nextfree is the end of the page that includes the end[].
+	//nextfree is the address of the page address that next is free;
+	//
 
 	// Allocate a chunk large enough to hold 'n' bytes, then update
 	// nextfree.  Make sure nextfree is kept aligned
 	// to a multiple of PGSIZE.
 	//
 	// LAB 2: Your code here.
-
-	return NULL;
+	
+	if(n==0)
+		return nextfree;
+	result = nextfree;
+	nextfree += n;
+	nextfree = ROUNDUP((char *) nextfree, PGSIZE);
+	return result;
 }
 
 // Set up a two-level page table:
