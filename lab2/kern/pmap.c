@@ -93,9 +93,9 @@ boot_alloc(uint32_t n)
 		nextfree = ROUNDUP((char *) end, PGSIZE);	
 	}
 	//flh
-	//when the first time the boot_alloc is used, the nextfree is the end of the page that includes the end[].
-	//nextfree is the address of the page address that next is free;
-	//
+	//address(end)+pgsize-address(end)%pgsize
+	//nextfree指向end所在页面的下一个页面的首地址
+	//ROUNDUP（a,pgsize）的作用就是返回a所在的页面的下一个页面的首地址。
 
 	// Allocate a chunk large enough to hold 'n' bytes, then update
 	// nextfree.  Make sure nextfree is kept aligned
@@ -107,7 +107,7 @@ boot_alloc(uint32_t n)
 		return nextfree;
 	result = nextfree;
 	nextfree += n;
-	nextfree = ROUNDUP((char *) nextfree, PGSIZE);
+	nextfree = ROUNDUP((char *) nextfree, PGSIZE);	
 	return result;
 }
 
@@ -130,12 +130,19 @@ mem_init(void)
 	i386_detect_memory();
 
 	// Remove this line when you're ready to test this function.
-	panic("mem_init: This function is not finished\n");
+	//panic("mem_init: This function is not finished\n");
 
 	//////////////////////////////////////////////////////////////////////
 	// create initial page directory.
+
+	//typedef uint32_t pde_t;
+	//pde_t *kern_pgdir;		// Kernel's initial page directory
+	//#define PGSIZE		4096		// bytes mapped by a page
+
+	//kern_padir得到nextfree，即这条语句生申请了一个页面，kern_padir是新页面的头地址
 	kern_pgdir = (pde_t *) boot_alloc(PGSIZE);
 	memset(kern_pgdir, 0, PGSIZE);
+
 
 	//////////////////////////////////////////////////////////////////////
 	// Recursively insert PD in itself as a page table, to form
@@ -153,6 +160,17 @@ mem_init(void)
 	// array.  'npages' is the number of physical pages in memory.  Use memset
 	// to initialize all fields of each struct PageInfo to 0.
 	// Your code goes here:
+	//给pages开辟内存空间，数量是npages个pageInfo
+	//pages用来存储内核的所有页面的相关内容（具体定义在memlayout.h中），以便内核进行跟踪
+	/******
+	struct PageInfo 
+	{ 	//Next page on the free list.
+		struct PageInfo *pp_link;
+		uint16_t pp_ref;
+		}
+********************************************/
+	pages = (struct PageInfo* ) boot_alloc(npages * sizeof( struct PageInfo) );
+	memset(pages,0,npages * sizeof(struct PageInfo) )  ;
 
 
 	//////////////////////////////////////////////////////////////////////
