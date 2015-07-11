@@ -108,6 +108,7 @@ boot_alloc(uint32_t n)
 	result = nextfree;
 	nextfree += n;
 	nextfree = ROUNDUP((char *) nextfree, PGSIZE);	
+	// return the head address of the alloc pages;
 	return result;
 }
 
@@ -139,7 +140,7 @@ mem_init(void)
 	//pde_t *kern_pgdir;		// Kernel's initial page directory
 	//#define PGSIZE		4096		// bytes mapped by a page
 
-	//kern_padir得到nextfree，即这条语句生申请了一个页面，kern_padir是新页面的头地址
+	//kern_padir得到，即这条语句生申请了一个页面，kern_padir是新页面的头地址
 	kern_pgdir = (pde_t *) boot_alloc(PGSIZE);
 	memset(kern_pgdir, 0, PGSIZE);
 
@@ -276,10 +277,33 @@ page_init(void)
 	// free pages!
 	size_t i;
 	for (i = 0; i < npages; i++) {
-		pages[i].pp_ref = 0;
-		pages[i].pp_link = page_free_list;
-		page_free_list = &pages[i];
-	}
+		if(i == 0)
+			{	pages[i].ppref = 1;
+				pages[i].pp_link = NULL;
+			}
+		if(i>=1 && i<npages_base)
+		{
+			pages[i].ppref = 0;
+			pages[i].pp_link = page_free_list; 
+			page_free_list = &page[i];
+		}
+		if(i>=IOPHYSMEM/PGSIZE && i< EXTPHYSMEM/PGSIZE )
+		{
+			pages[i].ppref = 1;
+			pages[i].pp_link = NULL;
+		}
+		if(i>=EXTPHYSMEM/PGSIZE && i<kern_pgdir/PGSIZE)
+		{
+			pages[i].ppref = 1;
+			pages[i].pp_link =NULL;
+		}
+		else
+		{
+			pages[i].ppref = 0;
+			pages[i].pp_link = page_free_list;
+			page_fre_list = &pages[i];
+		}
+
 }
 
 //
@@ -294,11 +318,27 @@ page_init(void)
 // Returns NULL if out of free memory.
 //
 // Hint: use page2kva and memset
+
+//apply a page, if alloc_flage==0, do not initialize the page;
+//if alloc_flags==1, initialize the page and make the entire page '\0';
 struct PageInfo *
 page_alloc(int alloc_flags)
-{
+{	
 	// Fill this function in
-	return 0;
+	if(page_free_list == NULL)
+		return NULL;
+	
+		struct PageInfo* page = page_free_list;
+		page_free_list = page->pp_link;
+		page->pp_link = NULL;
+
+		if(alloc_flags & ALLOC_ZERO)
+	{
+		char* pageAddress = page2kva(page);
+		memset(pageAddress,'\0',PGSIZE);
+	}
+
+	return page;
 }
 
 //
