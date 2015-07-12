@@ -351,6 +351,11 @@ page_free(struct PageInfo *pp)
 	// Fill this function in
 	// Hint: You may want to panic if pp->pp_ref is nonzero or
 	// pp->pp_link is not NULL.
+	if(pp->pp_ref != 0 || pp->pp_link !=NULL)
+		panic("pp_ref is not 0 or the pp_link is not NULL. The page is used\n");
+	pp->pp_link = page_free_list;
+	page_free_list = pp;
+	return;
 }
 
 //
