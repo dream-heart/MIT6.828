@@ -131,7 +131,7 @@ mem_init(void)
 	i386_detect_memory();
 
 	// Remove this line when you're ready to test this function.
-	//panic("mem_init: This function is not finished\n");
+	panic("mem_init: This function is not finished\n");
 
 	//////////////////////////////////////////////////////////////////////
 	// create initial page directory.
@@ -278,32 +278,33 @@ page_init(void)
 	size_t i;
 	for (i = 0; i < npages; i++) {
 		if(i == 0)
-			{	pages[i].ppref = 1;
+			{	pages[i].pp_ref = 1;
 				pages[i].pp_link = NULL;
 			}
-		if(i>=1 && i<npages_base)
+		if(i>=1 && i<npages_basemem)
 		{
-			pages[i].ppref = 0;
+			pages[i].pp_ref = 0;
 			pages[i].pp_link = page_free_list; 
-			page_free_list = &page[i];
+			page_free_list = &pages[i];
 		}
-		if(i>=IOPHYSMEM/PGSIZE && i< EXTPHYSMEM/PGSIZE )
+		if(i>=IOPHYSMEM/PGSIZE && i< (unsigned int)EXTPHYSMEM/PGSIZE )
 		{
-			pages[i].ppref = 1;
+			pages[i].pp_ref = 1;
 			pages[i].pp_link = NULL;
 		}
-		if(i>=EXTPHYSMEM/PGSIZE && i<kern_pgdir/PGSIZE)
+		if(i>=EXTPHYSMEM/PGSIZE && i< (unsigned int)kern_pgdir/PGSIZE)
 		{
-			pages[i].ppref = 1;
+			pages[i].pp_ref = 1;
 			pages[i].pp_link =NULL;
 		}
 		else
 		{
-			pages[i].ppref = 0;
+			pages[i].pp_ref = 0;
 			pages[i].pp_link = page_free_list;
-			page_fre_list = &pages[i];
+			page_free_list = &pages[i];
 		}
 
+	}
 }
 
 //
