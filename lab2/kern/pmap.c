@@ -108,6 +108,7 @@ boot_alloc(uint32_t n)
 	result = nextfree;
 	nextfree += n;
 	nextfree = ROUNDUP((char *) nextfree, PGSIZE);	
+	
 	// return the head address of the alloc pages;
 	return result;
 }
@@ -147,7 +148,7 @@ mem_init(void)
 
 	//////////////////////////////////////////////////////////////////////
 	// Recursively insert PD in itself as a page table, to form
-	// a virtual page table at virtual address UVPT.
+	// a virtual pnage table at virtual address UVPT.
 	// (For now, you don't have understand the greater purpose of the
 	// following line.)
 
@@ -278,34 +279,39 @@ page_init(void)
 	size_t i;
 	for (i = 0; i < npages; i++) {
 		if(i == 0)
-			{	pages[i].ppref = 1;
+			{	pages[i].pp_ref = 1;
 				pages[i].pp_link = NULL;
 			}
-		if(i>=1 && i<npages_base)
+		else if(i>=1 && i<npages_basemem)
 		{
-			pages[i].ppref = 0;
+			pages[i].pp_ref = 0;
 			pages[i].pp_link = page_free_list; 
-			page_free_list = &page[i];
+			page_free_list = &pages[i];
 		}
-		if(i>=IOPHYSMEM/PGSIZE && i< EXTPHYSMEM/PGSIZE )
+		else if(i>=IOPHYSMEM/PGSIZE && i< EXTPHYSMEM/PGSIZE )
 		{
-			pages[i].ppref = 1;
+			pages[i].pp_ref = 1;
 			pages[i].pp_link = NULL;
 		}
-		if(i>=EXTPHYSMEM/PGSIZE && i<kern_pgdir/PGSIZE)
+	//	原来错误的，吧kern_pgdir当成了可用的，但是其实这个是前面申请的地址，是不可用的。
+	//	应该是从新的地址开始，调用boot_alloc(0),可以返回当前空闲页的首地址。
+	//	else if(i>=EXTPHYSMEM / PGSIZE && 
+	//			i < ( ((int) (kern_pgdir)-KERNBASE) / PGSIZE)  )
+		else if( i >= EXTPHYSMEM / PGSIZE && 
+				i < ( (int)(boot_alloc(0)) - KERNBASE)/PGSIZE)
 		{
-			pages[i].ppref = 1;
+			pages[i].pp_ref = 1;
 			pages[i].pp_link =NULL;
 		}
 		else
 		{
-			pages[i].ppref = 0;
+			pages[i].pp_ref = 0;
 			pages[i].pp_link = page_free_list;
-			page_fre_list = &pages[i];
+			page_free_list = &pages[i];
 		}
 
+	}
 }
-
 //
 // Allocates a physical page.  If (alloc_flags & ALLOC_ZERO), fills the entire
 // returned physical page with '\0' bytes.  Does NOT increment the reference
