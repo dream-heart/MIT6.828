@@ -132,7 +132,7 @@ mem_init(void)
 	i386_detect_memory();
 
 	// Remove this line when you're ready to test this function.
-	panic("mem_init: This function is not finished\n");
+	//panic("mem_init: This function is not finished\n");
 
 	//////////////////////////////////////////////////////////////////////
 	// create initial page directory.
@@ -282,35 +282,23 @@ page_init(void)
 			{	pages[i].pp_ref = 1;
 				pages[i].pp_link = NULL;
 			}
-<<<<<<< HEAD
 		else if(i>=1 && i<npages_basemem)
-=======
-		if(i>=1 && i<npages_basemem)
->>>>>>> ba82a6f550123beb3d0fe52c0ec12007a91d91a5
 		{
 			pages[i].pp_ref = 0;
 			pages[i].pp_link = page_free_list; 
 			page_free_list = &pages[i];
 		}
-<<<<<<< HEAD
 		else if(i>=IOPHYSMEM/PGSIZE && i< EXTPHYSMEM/PGSIZE )
-=======
-		if(i>=IOPHYSMEM/PGSIZE && i< (unsigned int)EXTPHYSMEM/PGSIZE )
->>>>>>> ba82a6f550123beb3d0fe52c0ec12007a91d91a5
 		{
 			pages[i].pp_ref = 1;
 			pages[i].pp_link = NULL;
 		}
-<<<<<<< HEAD
 	//	原来错误的，吧kern_pgdir当成了可用的，但是其实这个是前面申请的地址，是不可用的。
 	//	应该是从新的地址开始，调用boot_alloc(0),可以返回当前空闲页的首地址。
 	//	else if(i>=EXTPHYSMEM / PGSIZE && 
 	//			i < ( ((int) (kern_pgdir)-KERNBASE) / PGSIZE)  )
 		else if( i >= EXTPHYSMEM / PGSIZE && 
 				i < ( (int)(boot_alloc(0)) - KERNBASE)/PGSIZE)
-=======
-		if(i>=EXTPHYSMEM/PGSIZE && i< (unsigned int)kern_pgdir/PGSIZE)
->>>>>>> ba82a6f550123beb3d0fe52c0ec12007a91d91a5
 		{
 			pages[i].pp_ref = 1;
 			pages[i].pp_link =NULL;
