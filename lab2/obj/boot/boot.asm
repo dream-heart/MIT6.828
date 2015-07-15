@@ -1,5 +1,5 @@
 
-obj/boot/boot.out:     file format elf32-i386
+obj/boot/boot.out：     文件格式 elf32-i386
 
 
 Disassembly of section .text:
@@ -120,7 +120,7 @@ spin:
 00007c64 <gdtdesc>:
     7c64:	17                   	pop    %ss
     7c65:	00 4c 7c 00          	add    %cl,0x0(%esp,%edi,2)
-    7c69:	00 90 90 55 ba f7    	add    %dl,-0x845aa70(%eax)
+    7c69:	00 66 90             	add    %ah,-0x70(%esi)
 
 00007c6c <waitdisk>:
 	}

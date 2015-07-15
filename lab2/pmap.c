@@ -399,7 +399,9 @@ page_decref(struct PageInfo* pp)
 //
 pte_t *
 pgdir_walk(pde_t *pgdir, const void *va, int create)
-{	//疑问：虚拟地址进行转换时，就二级页表来说，通过虚拟地址高10位得到的其一级页表的对应的地址是否是物理地址？
+{	
+	/*******************************************************
+	//疑问：虚拟地址进行转换时，就二级页表来说，通过虚拟地址高10位得到的其一级页表的对应的地址是否是物理地址？
 	//即存储在的页表基地址是不是物理地址？
 	//是物理地址，保存在cr3寄存器中。
 	// Fill this function in
@@ -455,7 +457,8 @@ pgdir_walk(pde_t *pgdir, const void *va, int create)
 		return NULL;
 
 	//页面申请成功    page != NULL
-
+	*******************************************************************/
+	return NULL
 }
 
 //
