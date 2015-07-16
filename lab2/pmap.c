@@ -399,27 +399,28 @@ page_decref(struct PageInfo* pp)
 //
 pte_t *
 pgdir_walk(pde_t *pgdir, const void *va, int create)
-{	
-	/*******************************************************
+{	//typedef uint32_t physaddr_t;
+	/*******************************************************/
 	//疑问：虚拟地址进行转换时，就二级页表来说，通过虚拟地址高10位得到的其一级页表的对应的地址是否是物理地址？
 	//即存储在的页表基地址是不是物理地址？
 	//是物理地址，保存在cr3寄存器中。
 	// Fill this function in
 	//取得va的 Page Directory INDEX 的值
 	//
-	unsigned int pageDirIndex= (va >> 22) & 0x3FF ;
+	unsigned int pageDirIndex= (physaddr_t)(va >> 22) & 0x3FF ;
 	
 	//从Page Directory INDEX中取出对应的page table的地址
 	//
-	physaddr_t  pageTableAddre  = (physaddr_t*)  (pgdir + pageDirIndex);
+	physaddr_t* pageTableBaseAddre  = (physaddr_t*)  (pgdir + pageDirIndex);
 	
 	//如果pageTable还没有被创建，而且create==0，则return NULL
 	//地址获取失败。
 	//
 	
-	if(pageTableAddre == NULL &&  create == 0)
-		return NULL;page_alloc
-	//需要创建page table
+	if(pageTableBaseAddre == NULL &&  create == 0)
+		return NULL;
+	//
+	//create==1,则需要创建page table
 	//
 	else if (pageTableAddre == NULL &&  create == 0)
 	{	
@@ -430,35 +431,29 @@ pgdir_walk(pde_t *pgdir, const void *va, int create)
 			return NULL;
 
 		//计算page table的物理地址 通过得到的pageTable的下标可以得到
-		//
-		physaddr_t pageTablePhyAddre = (usigned int ) (pageTable - pages) <<12;
+		//注意，新申请的新的页面的基地址最低的12位肯定是0，因为页面是4K对齐的，其低12位地址可以用来表示属性
+		pageTableBaseAddre = (physaddr_t *)  ((physaddr_t ) (pageTable - pages) <<12);
 
 		//page_alloc是不会对新申请的内存的pp_ref+1的，所以要手动加上
 		//
 		pageTable->pp_ref++;
-
-		for(physaddr_t i = pageTablePhyAddre; i< pageTablePhyAddre+1<<12;i++)
-
+		//
+		//初始化页面指向的物理地址
+		//
+		physaddr_t basePhyAdd = ( (physaddr_t)va-KERNBASE)>>12<<12;
+		for(int i = 0; i< 1<<10;i++){
+			*(pageTableBaseAddre + i) = (physaddr_t *)basePhyAdd +i;
+		}
 	}
 	//取出va对应的page table index
-	unsigned int pageTableIndex = (va >> 12) & 0x3FF;
+	unsigned int pageTableIndex = (physaddr_t ) (va >> 12) & 0x3FF;
 	//通过page table index，得到va的物理地址。
-	physaddr_t vaPhyAddre = (physaddr_t*)  (pageTableAddre + pageTableIndex);
-
-
-
-
-
-
-
-	struct PageInfo  *page = page_alloc(0);
-	//如果页面申请失败，返回NULL
-	if(page == NULL)
-		return NULL;
-
-	//页面申请成功    page != NULL
-	*******************************************************************/
-	return NULL
+	physaddr_t*  vaPhyAddre = (physaddr_t*)  (pageTableAddre + pageTableIndex);
+	vaPhyAddre =(physaddr_t*) (
+				(physaddr_t) (vaPhyAddre) >>12<<12);
+	unsigned int offset = (physaddr_t) va &0xFFF;
+	vaPhyAddre = (physaddr_t *) vaPhyAddre +  offset;
+	return vaPhyAddre;
 }
 
 //
