@@ -480,6 +480,19 @@ static void
 boot_map_region(pde_t *pgdir, uintptr_t va, size_t size, physaddr_t pa, int perm)
 {
 	// Fill this function in
+	int pgnum = size/PGSIZE;
+	int i;
+	for(i=0; i<pgnum; i++)
+	{
+		//查询VA对应的pageTable
+		pde_t *pageTable = pgdir_walk(pgdir, va, 1);
+		pageTable = (pde_t)pageTable>>12<<12;
+		int offseet;
+		for(offset=0; offset<2<<10;offset++)
+		{
+			*(pageTable+offset) = (ped_t)va - KERNBASE;
+		}
+	}
 }
 
 //
