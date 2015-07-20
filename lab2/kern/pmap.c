@@ -411,33 +411,34 @@ pgdir_walk(pde_t *pgdir, const void *va, int create)
 	
 	//从Page Directory INDEX中取出对应的page table的地址
 	//
-	physaddr_t* pageTableBaseAddre  = (physaddr_t*)  (pgdir + pageDirIndex);
+	physaddr_t* pageTableBaseAddrePointer  = (physaddr_t*)  (pgdir + pageDirIndex);
 	
 	//如果pageTable还没有被创建，而且create==0，则return NULL
 	//地址获取失败。
 	//
 	
-	if(pageTableBaseAddre == NULL &&  create == 0)
+	if(pageTableBaseAddrePointer == NULL &&  create == 0)
 		return NULL;
 	//
 	//create==1,则需要创建page table
 	//
-	else if (pageTableBaseAddre == NULL &&  create == 0)
+	else if (pageTableBaseAddrePointer == NULL &&  create == 0)
 	{	
 		struct PageInfo *pageTable = page_alloc(1);
 		// 申请新页面失败，此时创建page table 失败 return NULL；
 		//
 		if(pageTable == NULL )
 			return NULL;
-
+		pageTable->pp_ref++;
 		//计算page table的物理地址 通过得到的pageTable的下标可以得到
 		//注意，新申请的新的页面的基地址最低的12位肯定是0，因为页面是4K对齐的，其低12位地址可以用来表示属性
-		pageTableBaseAddre = (physaddr_t *)  ((physaddr_t ) (pageTable - pages) <<12);
-		pageTableBaseAddre = (physaddr_t*)
-					( (physaddr_t)pageTableBaseAddre |PTE_P |PTE_W | PTE_U);
+		physaddr_t pageTableBaseAddre = 0;
+		pageTableBaseAddre =  ((physaddr_t ) (pageTable - pages) <<12);
+		pageTableBaseAddre =  pageTableBaseAddre |PTE_P |PTE_W | PTE_U;
 		//page_alloc是不会对新申请的内存的pp_ref+1的，所以要手动加上
 		//
-		pageTable->pp_ref++;
+		physaddr_t* Page = pgdir + pageDirIndex;
+		*Page = pageTableBaseAddre;
 		//fangllihui
 		//初始化页面指向的物理地址
 		/**********************
@@ -450,10 +451,10 @@ pgdir_walk(pde_t *pgdir, const void *va, int create)
 	}
 	//取出va对应的page table index
 	
-	unsigned int pageTableIndex = (physaddr_t ) (va) >> 12 & 0x3FF;
-	physaddr_t* tempAddress = (physaddr_t*)
-					((physaddr_t) (pageTableBaseAddre) >>12<<12 ||PTE_P |PTE_W | PTE_U);
-	return (physaddr_t*) pageTableBaseAddre + pageTableIndex;
+	unsigned int pageTableOffset = (physaddr_t ) (va) >> 12 & 0x3FF;
+	
+	physaddr_t pageTableAddre = (*pageTableBaseAddrePointer>>12<<12) + pageTableOffset;
+	return (physaddr_t*) pageTableAddre;
 	/**********************8
 	//通过page table index，得到va的物理地址。
 	physaddr_t*  vaPhyAddre = (physaddr_t*)  (pageTableBaseAddre + pageTableIndex);
@@ -480,19 +481,17 @@ static void
 boot_map_region(pde_t *pgdir, uintptr_t va, size_t size, physaddr_t pa, int perm)
 {
 	// Fill this function in
-	int pgnum = size/PGSIZE;
-	int i;
-	for(i=0; i<pgnum; i++)
+	while(size)
 	{
-		//查询VA对应的pageTable
-		pde_t *pageTable = pgdir_walk(pgdir, va, 1);
-		pageTable = (pde_t)pageTable>>12<<12;
-		int offseet;
-		for(offset=0; offset<2<<10;offset++)
-		{
-			*(pageTable+offset) = (ped_t)va - KERNBASE;
-		}
+		pde_t *pageTable = pgdir_walk(pgdir, (pde_t*)va, 1);
+		if(pageTable == 0)
+			return ;
+		*pageTable = pa | perm|PTE_P;
+		va += PGSIZE;
+		pa +=PGSIZE;
+		size -=PGSIZE; 		
 	}
+	
 }
 
 //
