@@ -1577,7 +1577,7 @@ f010099f:	72 20                	jb     f01009c1 <check_va2pa+0x4b>
 f01009a1:	89 4c 24 0c          	mov    %ecx,0xc(%esp)
 f01009a5:	c7 44 24 08 d0 31 10 	movl   $0xf01031d0,0x8(%esp)
 f01009ac:	f0 
-f01009ad:	c7 44 24 04 0f 03 00 	movl   $0x30f,0x4(%esp)
+f01009ad:	c7 44 24 04 12 03 00 	movl   $0x312,0x4(%esp)
 f01009b4:	00 
 f01009b5:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f01009bc:	e8 d3 f6 ff ff       	call   f0100094 <_panic>
@@ -1655,7 +1655,7 @@ f0100a37:	75 1c                	jne    f0100a55 <check_page_free_list+0x3c>
 		panic("'page_free_list' is a null pointer!");
 f0100a39:	c7 44 24 08 f4 31 10 	movl   $0xf01031f4,0x8(%esp)
 f0100a40:	f0 
-f0100a41:	c7 44 24 04 52 02 00 	movl   $0x252,0x4(%esp)
+f0100a41:	c7 44 24 04 55 02 00 	movl   $0x255,0x4(%esp)
 f0100a48:	00 
 f0100a49:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0100a50:	e8 3f f6 ff ff       	call   f0100094 <_panic>
@@ -1808,7 +1808,7 @@ f0100b4f:	c7 44 24 0c 2e 36 10 	movl   $0xf010362e,0xc(%esp)
 f0100b56:	f0 
 f0100b57:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0100b5e:	f0 
-f0100b5f:	c7 44 24 04 6c 02 00 	movl   $0x26c,0x4(%esp)
+f0100b5f:	c7 44 24 04 6f 02 00 	movl   $0x26f,0x4(%esp)
 f0100b66:	00 
 f0100b67:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0100b6e:	e8 21 f5 ff ff       	call   f0100094 <_panic>
@@ -1819,7 +1819,7 @@ f0100b78:	c7 44 24 0c 4f 36 10 	movl   $0xf010364f,0xc(%esp)
 f0100b7f:	f0 
 f0100b80:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0100b87:	f0 
-f0100b88:	c7 44 24 04 6d 02 00 	movl   $0x26d,0x4(%esp)
+f0100b88:	c7 44 24 04 70 02 00 	movl   $0x270,0x4(%esp)
 f0100b8f:	00 
 f0100b90:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0100b97:	e8 f8 f4 ff ff       	call   f0100094 <_panic>
@@ -1832,7 +1832,7 @@ f0100ba5:	c7 44 24 0c 18 32 10 	movl   $0xf0103218,0xc(%esp)
 f0100bac:	f0 
 f0100bad:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0100bb4:	f0 
-f0100bb5:	c7 44 24 04 6e 02 00 	movl   $0x26e,0x4(%esp)
+f0100bb5:	c7 44 24 04 71 02 00 	movl   $0x271,0x4(%esp)
 f0100bbc:	00 
 f0100bbd:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0100bc4:	e8 cb f4 ff ff       	call   f0100094 <_panic>
@@ -1853,7 +1853,7 @@ f0100bd3:	c7 44 24 0c 63 36 10 	movl   $0xf0103663,0xc(%esp)
 f0100bda:	f0 
 f0100bdb:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0100be2:	f0 
-f0100be3:	c7 44 24 04 71 02 00 	movl   $0x271,0x4(%esp)
+f0100be3:	c7 44 24 04 74 02 00 	movl   $0x274,0x4(%esp)
 f0100bea:	00 
 f0100beb:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0100bf2:	e8 9d f4 ff ff       	call   f0100094 <_panic>
@@ -1864,7 +1864,7 @@ f0100bfe:	c7 44 24 0c 74 36 10 	movl   $0xf0103674,0xc(%esp)
 f0100c05:	f0 
 f0100c06:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0100c0d:	f0 
-f0100c0e:	c7 44 24 04 72 02 00 	movl   $0x272,0x4(%esp)
+f0100c0e:	c7 44 24 04 75 02 00 	movl   $0x275,0x4(%esp)
 f0100c15:	00 
 f0100c16:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0100c1d:	e8 72 f4 ff ff       	call   f0100094 <_panic>
@@ -1875,7 +1875,7 @@ f0100c29:	c7 44 24 0c 4c 32 10 	movl   $0xf010324c,0xc(%esp)
 f0100c30:	f0 
 f0100c31:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0100c38:	f0 
-f0100c39:	c7 44 24 04 73 02 00 	movl   $0x273,0x4(%esp)
+f0100c39:	c7 44 24 04 76 02 00 	movl   $0x276,0x4(%esp)
 f0100c40:	00 
 f0100c41:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0100c48:	e8 47 f4 ff ff       	call   f0100094 <_panic>
@@ -1886,7 +1886,7 @@ f0100c54:	c7 44 24 0c 8d 36 10 	movl   $0xf010368d,0xc(%esp)
 f0100c5b:	f0 
 f0100c5c:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0100c63:	f0 
-f0100c64:	c7 44 24 04 74 02 00 	movl   $0x274,0x4(%esp)
+f0100c64:	c7 44 24 04 77 02 00 	movl   $0x277,0x4(%esp)
 f0100c6b:	00 
 f0100c6c:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0100c73:	e8 1c f4 ff ff       	call   f0100094 <_panic>
@@ -1919,7 +1919,7 @@ f0100cb3:	c7 44 24 0c 70 32 10 	movl   $0xf0103270,0xc(%esp)
 f0100cba:	f0 
 f0100cbb:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0100cc2:	f0 
-f0100cc3:	c7 44 24 04 75 02 00 	movl   $0x275,0x4(%esp)
+f0100cc3:	c7 44 24 04 78 02 00 	movl   $0x278,0x4(%esp)
 f0100cca:	00 
 f0100ccb:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0100cd2:	e8 bd f3 ff ff       	call   f0100094 <_panic>
@@ -1952,7 +1952,7 @@ f0100ced:	c7 44 24 0c a7 36 10 	movl   $0xf01036a7,0xc(%esp)
 f0100cf4:	f0 
 f0100cf5:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0100cfc:	f0 
-f0100cfd:	c7 44 24 04 7d 02 00 	movl   $0x27d,0x4(%esp)
+f0100cfd:	c7 44 24 04 80 02 00 	movl   $0x280,0x4(%esp)
 f0100d04:	00 
 f0100d05:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0100d0c:	e8 83 f3 ff ff       	call   f0100094 <_panic>
@@ -1963,7 +1963,7 @@ f0100d15:	c7 44 24 0c b9 36 10 	movl   $0xf01036b9,0xc(%esp)
 f0100d1c:	f0 
 f0100d1d:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0100d24:	f0 
-f0100d25:	c7 44 24 04 7e 02 00 	movl   $0x27e,0x4(%esp)
+f0100d25:	c7 44 24 04 81 02 00 	movl   $0x281,0x4(%esp)
 f0100d2c:	00 
 f0100d2d:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0100d34:	e8 5b f3 ff ff       	call   f0100094 <_panic>
@@ -2508,7 +2508,7 @@ f0101094:	75 1c                	jne    f01010b2 <mem_init+0x15b>
 		panic("'pages' is a null pointer!");
 f0101096:	c7 44 24 08 ca 36 10 	movl   $0xf01036ca,0x8(%esp)
 f010109d:	f0 
-f010109e:	c7 44 24 04 8f 02 00 	movl   $0x28f,0x4(%esp)
+f010109e:	c7 44 24 04 92 02 00 	movl   $0x292,0x4(%esp)
 f01010a5:	00 
 f01010a6:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f01010ad:	e8 e2 ef ff ff       	call   f0100094 <_panic>
@@ -2543,7 +2543,7 @@ f01010d9:	c7 44 24 0c e5 36 10 	movl   $0xf01036e5,0xc(%esp)
 f01010e0:	f0 
 f01010e1:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f01010e8:	f0 
-f01010e9:	c7 44 24 04 97 02 00 	movl   $0x297,0x4(%esp)
+f01010e9:	c7 44 24 04 9a 02 00 	movl   $0x29a,0x4(%esp)
 f01010f0:	00 
 f01010f1:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f01010f8:	e8 97 ef ff ff       	call   f0100094 <_panic>
@@ -2557,7 +2557,7 @@ f010110f:	c7 44 24 0c fb 36 10 	movl   $0xf01036fb,0xc(%esp)
 f0101116:	f0 
 f0101117:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f010111e:	f0 
-f010111f:	c7 44 24 04 98 02 00 	movl   $0x298,0x4(%esp)
+f010111f:	c7 44 24 04 9b 02 00 	movl   $0x29b,0x4(%esp)
 f0101126:	00 
 f0101127:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f010112e:	e8 61 ef ff ff       	call   f0100094 <_panic>
@@ -2571,7 +2571,7 @@ f0101146:	c7 44 24 0c 11 37 10 	movl   $0xf0103711,0xc(%esp)
 f010114d:	f0 
 f010114e:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101155:	f0 
-f0101156:	c7 44 24 04 99 02 00 	movl   $0x299,0x4(%esp)
+f0101156:	c7 44 24 04 9c 02 00 	movl   $0x29c,0x4(%esp)
 f010115d:	00 
 f010115e:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0101165:	e8 2a ef ff ff       	call   f0100094 <_panic>
@@ -2584,7 +2584,7 @@ f010116e:	c7 44 24 0c 27 37 10 	movl   $0xf0103727,0xc(%esp)
 f0101175:	f0 
 f0101176:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f010117d:	f0 
-f010117e:	c7 44 24 04 9c 02 00 	movl   $0x29c,0x4(%esp)
+f010117e:	c7 44 24 04 9f 02 00 	movl   $0x29f,0x4(%esp)
 f0101185:	00 
 f0101186:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f010118d:	e8 02 ef ff ff       	call   f0100094 <_panic>
@@ -2597,7 +2597,7 @@ f010119c:	c7 44 24 0c 58 33 10 	movl   $0xf0103358,0xc(%esp)
 f01011a3:	f0 
 f01011a4:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f01011ab:	f0 
-f01011ac:	c7 44 24 04 9d 02 00 	movl   $0x29d,0x4(%esp)
+f01011ac:	c7 44 24 04 a0 02 00 	movl   $0x2a0,0x4(%esp)
 f01011b3:	00 
 f01011b4:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f01011bb:	e8 d4 ee ff ff       	call   f0100094 <_panic>
@@ -2621,7 +2621,7 @@ f01011dc:	c7 44 24 0c 39 37 10 	movl   $0xf0103739,0xc(%esp)
 f01011e3:	f0 
 f01011e4:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f01011eb:	f0 
-f01011ec:	c7 44 24 04 9e 02 00 	movl   $0x29e,0x4(%esp)
+f01011ec:	c7 44 24 04 a1 02 00 	movl   $0x2a1,0x4(%esp)
 f01011f3:	00 
 f01011f4:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f01011fb:	e8 94 ee ff ff       	call   f0100094 <_panic>
@@ -2636,7 +2636,7 @@ f010120e:	c7 44 24 0c 56 37 10 	movl   $0xf0103756,0xc(%esp)
 f0101215:	f0 
 f0101216:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f010121d:	f0 
-f010121e:	c7 44 24 04 9f 02 00 	movl   $0x29f,0x4(%esp)
+f010121e:	c7 44 24 04 a2 02 00 	movl   $0x2a2,0x4(%esp)
 f0101225:	00 
 f0101226:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f010122d:	e8 62 ee ff ff       	call   f0100094 <_panic>
@@ -2652,7 +2652,7 @@ f0101243:	c7 44 24 0c 73 37 10 	movl   $0xf0103773,0xc(%esp)
 f010124a:	f0 
 f010124b:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101252:	f0 
-f0101253:	c7 44 24 04 a0 02 00 	movl   $0x2a0,0x4(%esp)
+f0101253:	c7 44 24 04 a3 02 00 	movl   $0x2a3,0x4(%esp)
 f010125a:	00 
 f010125b:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0101262:	e8 2d ee ff ff       	call   f0100094 <_panic>
@@ -2675,7 +2675,7 @@ f0101289:	c7 44 24 0c 90 37 10 	movl   $0xf0103790,0xc(%esp)
 f0101290:	f0 
 f0101291:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101298:	f0 
-f0101299:	c7 44 24 04 a7 02 00 	movl   $0x2a7,0x4(%esp)
+f0101299:	c7 44 24 04 aa 02 00 	movl   $0x2aa,0x4(%esp)
 f01012a0:	00 
 f01012a1:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f01012a8:	e8 e7 ed ff ff       	call   f0100094 <_panic>
@@ -2702,7 +2702,7 @@ f01012da:	c7 44 24 0c e5 36 10 	movl   $0xf01036e5,0xc(%esp)
 f01012e1:	f0 
 f01012e2:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f01012e9:	f0 
-f01012ea:	c7 44 24 04 ae 02 00 	movl   $0x2ae,0x4(%esp)
+f01012ea:	c7 44 24 04 b1 02 00 	movl   $0x2b1,0x4(%esp)
 f01012f1:	00 
 f01012f2:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f01012f9:	e8 96 ed ff ff       	call   f0100094 <_panic>
@@ -2716,7 +2716,7 @@ f0101310:	c7 44 24 0c fb 36 10 	movl   $0xf01036fb,0xc(%esp)
 f0101317:	f0 
 f0101318:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f010131f:	f0 
-f0101320:	c7 44 24 04 af 02 00 	movl   $0x2af,0x4(%esp)
+f0101320:	c7 44 24 04 b2 02 00 	movl   $0x2b2,0x4(%esp)
 f0101327:	00 
 f0101328:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f010132f:	e8 60 ed ff ff       	call   f0100094 <_panic>
@@ -2730,7 +2730,7 @@ f0101347:	c7 44 24 0c 11 37 10 	movl   $0xf0103711,0xc(%esp)
 f010134e:	f0 
 f010134f:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101356:	f0 
-f0101357:	c7 44 24 04 b0 02 00 	movl   $0x2b0,0x4(%esp)
+f0101357:	c7 44 24 04 b3 02 00 	movl   $0x2b3,0x4(%esp)
 f010135e:	00 
 f010135f:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0101366:	e8 29 ed ff ff       	call   f0100094 <_panic>
@@ -2742,7 +2742,7 @@ f010136f:	c7 44 24 0c 27 37 10 	movl   $0xf0103727,0xc(%esp)
 f0101376:	f0 
 f0101377:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f010137e:	f0 
-f010137f:	c7 44 24 04 b2 02 00 	movl   $0x2b2,0x4(%esp)
+f010137f:	c7 44 24 04 b5 02 00 	movl   $0x2b5,0x4(%esp)
 f0101386:	00 
 f0101387:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f010138e:	e8 01 ed ff ff       	call   f0100094 <_panic>
@@ -2755,7 +2755,7 @@ f010139d:	c7 44 24 0c 58 33 10 	movl   $0xf0103358,0xc(%esp)
 f01013a4:	f0 
 f01013a5:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f01013ac:	f0 
-f01013ad:	c7 44 24 04 b3 02 00 	movl   $0x2b3,0x4(%esp)
+f01013ad:	c7 44 24 04 b6 02 00 	movl   $0x2b6,0x4(%esp)
 f01013b4:	00 
 f01013b5:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f01013bc:	e8 d3 ec ff ff       	call   f0100094 <_panic>
@@ -2768,7 +2768,7 @@ f01013d1:	c7 44 24 0c 90 37 10 	movl   $0xf0103790,0xc(%esp)
 f01013d8:	f0 
 f01013d9:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f01013e0:	f0 
-f01013e1:	c7 44 24 04 b4 02 00 	movl   $0x2b4,0x4(%esp)
+f01013e1:	c7 44 24 04 b7 02 00 	movl   $0x2b7,0x4(%esp)
 f01013e8:	00 
 f01013e9:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f01013f0:	e8 9f ec ff ff       	call   f0100094 <_panic>
@@ -2817,7 +2817,7 @@ f0101465:	c7 44 24 0c 9f 37 10 	movl   $0xf010379f,0xc(%esp)
 f010146c:	f0 
 f010146d:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101474:	f0 
-f0101475:	c7 44 24 04 b9 02 00 	movl   $0x2b9,0x4(%esp)
+f0101475:	c7 44 24 04 bc 02 00 	movl   $0x2bc,0x4(%esp)
 f010147c:	00 
 f010147d:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0101484:	e8 0b ec ff ff       	call   f0100094 <_panic>
@@ -2828,7 +2828,7 @@ f010148d:	c7 44 24 0c bd 37 10 	movl   $0xf01037bd,0xc(%esp)
 f0101494:	f0 
 f0101495:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f010149c:	f0 
-f010149d:	c7 44 24 04 ba 02 00 	movl   $0x2ba,0x4(%esp)
+f010149d:	c7 44 24 04 bd 02 00 	movl   $0x2bd,0x4(%esp)
 f01014a4:	00 
 f01014a5:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f01014ac:	e8 e3 eb ff ff       	call   f0100094 <_panic>
@@ -2881,7 +2881,7 @@ f01014fd:	c7 44 24 0c cd 37 10 	movl   $0xf01037cd,0xc(%esp)
 f0101504:	f0 
 f0101505:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f010150c:	f0 
-f010150d:	c7 44 24 04 bd 02 00 	movl   $0x2bd,0x4(%esp)
+f010150d:	c7 44 24 04 c0 02 00 	movl   $0x2c0,0x4(%esp)
 f0101514:	00 
 f0101515:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f010151c:	e8 73 eb ff ff       	call   f0100094 <_panic>
@@ -2936,7 +2936,7 @@ f0101560:	c7 44 24 0c d7 37 10 	movl   $0xf01037d7,0xc(%esp)
 f0101567:	f0 
 f0101568:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f010156f:	f0 
-f0101570:	c7 44 24 04 ca 02 00 	movl   $0x2ca,0x4(%esp)
+f0101570:	c7 44 24 04 cd 02 00 	movl   $0x2cd,0x4(%esp)
 f0101577:	00 
 f0101578:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f010157f:	e8 10 eb ff ff       	call   f0100094 <_panic>
@@ -2959,7 +2959,7 @@ f01015a3:	c7 44 24 0c e5 36 10 	movl   $0xf01036e5,0xc(%esp)
 f01015aa:	f0 
 f01015ab:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f01015b2:	f0 
-f01015b3:	c7 44 24 04 23 03 00 	movl   $0x323,0x4(%esp)
+f01015b3:	c7 44 24 04 26 03 00 	movl   $0x326,0x4(%esp)
 f01015ba:	00 
 f01015bb:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f01015c2:	e8 cd ea ff ff       	call   f0100094 <_panic>
@@ -2973,7 +2973,7 @@ f01015d9:	c7 44 24 0c fb 36 10 	movl   $0xf01036fb,0xc(%esp)
 f01015e0:	f0 
 f01015e1:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f01015e8:	f0 
-f01015e9:	c7 44 24 04 24 03 00 	movl   $0x324,0x4(%esp)
+f01015e9:	c7 44 24 04 27 03 00 	movl   $0x327,0x4(%esp)
 f01015f0:	00 
 f01015f1:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f01015f8:	e8 97 ea ff ff       	call   f0100094 <_panic>
@@ -2987,7 +2987,7 @@ f010160f:	c7 44 24 0c 11 37 10 	movl   $0xf0103711,0xc(%esp)
 f0101616:	f0 
 f0101617:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f010161e:	f0 
-f010161f:	c7 44 24 04 25 03 00 	movl   $0x325,0x4(%esp)
+f010161f:	c7 44 24 04 28 03 00 	movl   $0x328,0x4(%esp)
 f0101626:	00 
 f0101627:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f010162e:	e8 61 ea ff ff       	call   f0100094 <_panic>
@@ -3000,7 +3000,7 @@ f0101638:	c7 44 24 0c 27 37 10 	movl   $0xf0103727,0xc(%esp)
 f010163f:	f0 
 f0101640:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101647:	f0 
-f0101648:	c7 44 24 04 28 03 00 	movl   $0x328,0x4(%esp)
+f0101648:	c7 44 24 04 2b 03 00 	movl   $0x32b,0x4(%esp)
 f010164f:	00 
 f0101650:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0101657:	e8 38 ea ff ff       	call   f0100094 <_panic>
@@ -3013,7 +3013,7 @@ f0101665:	c7 44 24 0c 58 33 10 	movl   $0xf0103358,0xc(%esp)
 f010166c:	f0 
 f010166d:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101674:	f0 
-f0101675:	c7 44 24 04 29 03 00 	movl   $0x329,0x4(%esp)
+f0101675:	c7 44 24 04 2c 03 00 	movl   $0x32c,0x4(%esp)
 f010167c:	00 
 f010167d:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0101684:	e8 0b ea ff ff       	call   f0100094 <_panic>
@@ -3034,7 +3034,7 @@ f01016a3:	c7 44 24 0c 90 37 10 	movl   $0xf0103790,0xc(%esp)
 f01016aa:	f0 
 f01016ab:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f01016b2:	f0 
-f01016b3:	c7 44 24 04 30 03 00 	movl   $0x330,0x4(%esp)
+f01016b3:	c7 44 24 04 33 03 00 	movl   $0x333,0x4(%esp)
 f01016ba:	00 
 f01016bb:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f01016c2:	e8 cd e9 ff ff       	call   f0100094 <_panic>
@@ -3054,7 +3054,7 @@ f01016e8:	c7 44 24 0c 98 33 10 	movl   $0xf0103398,0xc(%esp)
 f01016ef:	f0 
 f01016f0:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f01016f7:	f0 
-f01016f8:	c7 44 24 04 33 03 00 	movl   $0x333,0x4(%esp)
+f01016f8:	c7 44 24 04 36 03 00 	movl   $0x336,0x4(%esp)
 f01016ff:	00 
 f0101700:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0101707:	e8 88 e9 ff ff       	call   f0100094 <_panic>
@@ -3074,7 +3074,7 @@ f010172c:	c7 44 24 0c d0 33 10 	movl   $0xf01033d0,0xc(%esp)
 f0101733:	f0 
 f0101734:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f010173b:	f0 
-f010173c:	c7 44 24 04 36 03 00 	movl   $0x336,0x4(%esp)
+f010173c:	c7 44 24 04 39 03 00 	movl   $0x339,0x4(%esp)
 f0101743:	00 
 f0101744:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f010174b:	e8 44 e9 ff ff       	call   f0100094 <_panic>
@@ -3099,7 +3099,7 @@ f0101781:	c7 44 24 0c 00 34 10 	movl   $0xf0103400,0xc(%esp)
 f0101788:	f0 
 f0101789:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101790:	f0 
-f0101791:	c7 44 24 04 3a 03 00 	movl   $0x33a,0x4(%esp)
+f0101791:	c7 44 24 04 3d 03 00 	movl   $0x33d,0x4(%esp)
 f0101798:	00 
 f0101799:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f01017a0:	e8 ef e8 ff ff       	call   f0100094 <_panic>
@@ -3124,7 +3124,7 @@ f01017c5:	c7 44 24 0c 30 34 10 	movl   $0xf0103430,0xc(%esp)
 f01017cc:	f0 
 f01017cd:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f01017d4:	f0 
-f01017d5:	c7 44 24 04 3b 03 00 	movl   $0x33b,0x4(%esp)
+f01017d5:	c7 44 24 04 3e 03 00 	movl   $0x33e,0x4(%esp)
 f01017dc:	00 
 f01017dd:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f01017e4:	e8 ab e8 ff ff       	call   f0100094 <_panic>
@@ -3142,7 +3142,7 @@ f0101804:	c7 44 24 0c 58 34 10 	movl   $0xf0103458,0xc(%esp)
 f010180b:	f0 
 f010180c:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101813:	f0 
-f0101814:	c7 44 24 04 3c 03 00 	movl   $0x33c,0x4(%esp)
+f0101814:	c7 44 24 04 3f 03 00 	movl   $0x33f,0x4(%esp)
 f010181b:	00 
 f010181c:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0101823:	e8 6c e8 ff ff       	call   f0100094 <_panic>
@@ -3153,7 +3153,7 @@ f010182f:	c7 44 24 0c e2 37 10 	movl   $0xf01037e2,0xc(%esp)
 f0101836:	f0 
 f0101837:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f010183e:	f0 
-f010183f:	c7 44 24 04 3d 03 00 	movl   $0x33d,0x4(%esp)
+f010183f:	c7 44 24 04 40 03 00 	movl   $0x340,0x4(%esp)
 f0101846:	00 
 f0101847:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f010184e:	e8 41 e8 ff ff       	call   f0100094 <_panic>
@@ -3165,7 +3165,7 @@ f010185d:	c7 44 24 0c f3 37 10 	movl   $0xf01037f3,0xc(%esp)
 f0101864:	f0 
 f0101865:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f010186c:	f0 
-f010186d:	c7 44 24 04 3e 03 00 	movl   $0x33e,0x4(%esp)
+f010186d:	c7 44 24 04 41 03 00 	movl   $0x341,0x4(%esp)
 f0101874:	00 
 f0101875:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f010187c:	e8 13 e8 ff ff       	call   f0100094 <_panic>
@@ -3185,7 +3185,7 @@ f01018a1:	c7 44 24 0c 88 34 10 	movl   $0xf0103488,0xc(%esp)
 f01018a8:	f0 
 f01018a9:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f01018b0:	f0 
-f01018b1:	c7 44 24 04 41 03 00 	movl   $0x341,0x4(%esp)
+f01018b1:	c7 44 24 04 44 03 00 	movl   $0x344,0x4(%esp)
 f01018b8:	00 
 f01018b9:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f01018c0:	e8 cf e7 ff ff       	call   f0100094 <_panic>
@@ -3203,7 +3203,7 @@ f01018e0:	c7 44 24 0c c4 34 10 	movl   $0xf01034c4,0xc(%esp)
 f01018e7:	f0 
 f01018e8:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f01018ef:	f0 
-f01018f0:	c7 44 24 04 42 03 00 	movl   $0x342,0x4(%esp)
+f01018f0:	c7 44 24 04 45 03 00 	movl   $0x345,0x4(%esp)
 f01018f7:	00 
 f01018f8:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f01018ff:	e8 90 e7 ff ff       	call   f0100094 <_panic>
@@ -3214,7 +3214,7 @@ f010190b:	c7 44 24 0c 04 38 10 	movl   $0xf0103804,0xc(%esp)
 f0101912:	f0 
 f0101913:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f010191a:	f0 
-f010191b:	c7 44 24 04 43 03 00 	movl   $0x343,0x4(%esp)
+f010191b:	c7 44 24 04 46 03 00 	movl   $0x346,0x4(%esp)
 f0101922:	00 
 f0101923:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f010192a:	e8 65 e7 ff ff       	call   f0100094 <_panic>
@@ -3229,7 +3229,7 @@ f010193f:	c7 44 24 0c 90 37 10 	movl   $0xf0103790,0xc(%esp)
 f0101946:	f0 
 f0101947:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f010194e:	f0 
-f010194f:	c7 44 24 04 46 03 00 	movl   $0x346,0x4(%esp)
+f010194f:	c7 44 24 04 49 03 00 	movl   $0x349,0x4(%esp)
 f0101956:	00 
 f0101957:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f010195e:	e8 31 e7 ff ff       	call   f0100094 <_panic>
@@ -3250,7 +3250,7 @@ f0101989:	c7 44 24 0c 88 34 10 	movl   $0xf0103488,0xc(%esp)
 f0101990:	f0 
 f0101991:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101998:	f0 
-f0101999:	c7 44 24 04 49 03 00 	movl   $0x349,0x4(%esp)
+f0101999:	c7 44 24 04 4c 03 00 	movl   $0x34c,0x4(%esp)
 f01019a0:	00 
 f01019a1:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f01019a8:	e8 e7 e6 ff ff       	call   f0100094 <_panic>
@@ -3268,7 +3268,7 @@ f01019cb:	c7 44 24 0c c4 34 10 	movl   $0xf01034c4,0xc(%esp)
 f01019d2:	f0 
 f01019d3:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f01019da:	f0 
-f01019db:	c7 44 24 04 4a 03 00 	movl   $0x34a,0x4(%esp)
+f01019db:	c7 44 24 04 4d 03 00 	movl   $0x34d,0x4(%esp)
 f01019e2:	00 
 f01019e3:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f01019ea:	e8 a5 e6 ff ff       	call   f0100094 <_panic>
@@ -3279,7 +3279,7 @@ f01019f6:	c7 44 24 0c 04 38 10 	movl   $0xf0103804,0xc(%esp)
 f01019fd:	f0 
 f01019fe:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101a05:	f0 
-f0101a06:	c7 44 24 04 4b 03 00 	movl   $0x34b,0x4(%esp)
+f0101a06:	c7 44 24 04 4e 03 00 	movl   $0x34e,0x4(%esp)
 f0101a0d:	00 
 f0101a0e:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0101a15:	e8 7a e6 ff ff       	call   f0100094 <_panic>
@@ -3295,7 +3295,7 @@ f0101a2a:	c7 44 24 0c 90 37 10 	movl   $0xf0103790,0xc(%esp)
 f0101a31:	f0 
 f0101a32:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101a39:	f0 
-f0101a3a:	c7 44 24 04 4f 03 00 	movl   $0x34f,0x4(%esp)
+f0101a3a:	c7 44 24 04 52 03 00 	movl   $0x352,0x4(%esp)
 f0101a41:	00 
 f0101a42:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0101a49:	e8 46 e6 ff ff       	call   f0100094 <_panic>
@@ -3321,7 +3321,7 @@ f0101a6d:	72 20                	jb     f0101a8f <mem_init+0xb38>
 f0101a6f:	89 4c 24 0c          	mov    %ecx,0xc(%esp)
 f0101a73:	c7 44 24 08 d0 31 10 	movl   $0xf01031d0,0x8(%esp)
 f0101a7a:	f0 
-f0101a7b:	c7 44 24 04 52 03 00 	movl   $0x352,0x4(%esp)
+f0101a7b:	c7 44 24 04 55 03 00 	movl   $0x355,0x4(%esp)
 f0101a82:	00 
 f0101a83:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0101a8a:	e8 05 e6 ff ff       	call   f0100094 <_panic>
@@ -3341,7 +3341,7 @@ f0101ab5:	c7 44 24 0c f4 34 10 	movl   $0xf01034f4,0xc(%esp)
 f0101abc:	f0 
 f0101abd:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101ac4:	f0 
-f0101ac5:	c7 44 24 04 53 03 00 	movl   $0x353,0x4(%esp)
+f0101ac5:	c7 44 24 04 56 03 00 	movl   $0x356,0x4(%esp)
 f0101acc:	00 
 f0101acd:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0101ad4:	e8 bb e5 ff ff       	call   f0100094 <_panic>
@@ -3361,7 +3361,7 @@ f0101af9:	c7 44 24 0c 34 35 10 	movl   $0xf0103534,0xc(%esp)
 f0101b00:	f0 
 f0101b01:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101b08:	f0 
-f0101b09:	c7 44 24 04 56 03 00 	movl   $0x356,0x4(%esp)
+f0101b09:	c7 44 24 04 59 03 00 	movl   $0x359,0x4(%esp)
 f0101b10:	00 
 f0101b11:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0101b18:	e8 77 e5 ff ff       	call   f0100094 <_panic>
@@ -3385,7 +3385,7 @@ f0101b3b:	c7 44 24 0c c4 34 10 	movl   $0xf01034c4,0xc(%esp)
 f0101b42:	f0 
 f0101b43:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101b4a:	f0 
-f0101b4b:	c7 44 24 04 57 03 00 	movl   $0x357,0x4(%esp)
+f0101b4b:	c7 44 24 04 5a 03 00 	movl   $0x35a,0x4(%esp)
 f0101b52:	00 
 f0101b53:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0101b5a:	e8 35 e5 ff ff       	call   f0100094 <_panic>
@@ -3396,7 +3396,7 @@ f0101b66:	c7 44 24 0c 04 38 10 	movl   $0xf0103804,0xc(%esp)
 f0101b6d:	f0 
 f0101b6e:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101b75:	f0 
-f0101b76:	c7 44 24 04 58 03 00 	movl   $0x358,0x4(%esp)
+f0101b76:	c7 44 24 04 5b 03 00 	movl   $0x35b,0x4(%esp)
 f0101b7d:	00 
 f0101b7e:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0101b85:	e8 0a e5 ff ff       	call   f0100094 <_panic>
@@ -3408,7 +3408,7 @@ f0101b94:	c7 44 24 0c 74 35 10 	movl   $0xf0103574,0xc(%esp)
 f0101b9b:	f0 
 f0101b9c:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101ba3:	f0 
-f0101ba4:	c7 44 24 04 59 03 00 	movl   $0x359,0x4(%esp)
+f0101ba4:	c7 44 24 04 5c 03 00 	movl   $0x35c,0x4(%esp)
 f0101bab:	00 
 f0101bac:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0101bb3:	e8 dc e4 ff ff       	call   f0100094 <_panic>
@@ -3419,7 +3419,7 @@ f0101bbe:	c7 44 24 0c 15 38 10 	movl   $0xf0103815,0xc(%esp)
 f0101bc5:	f0 
 f0101bc6:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101bcd:	f0 
-f0101bce:	c7 44 24 04 5a 03 00 	movl   $0x35a,0x4(%esp)
+f0101bce:	c7 44 24 04 5d 03 00 	movl   $0x35d,0x4(%esp)
 f0101bd5:	00 
 f0101bd6:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0101bdd:	e8 b2 e4 ff ff       	call   f0100094 <_panic>
@@ -3439,7 +3439,7 @@ f0101c02:	c7 44 24 0c 88 34 10 	movl   $0xf0103488,0xc(%esp)
 f0101c09:	f0 
 f0101c0a:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101c11:	f0 
-f0101c12:	c7 44 24 04 5d 03 00 	movl   $0x35d,0x4(%esp)
+f0101c12:	c7 44 24 04 60 03 00 	movl   $0x360,0x4(%esp)
 f0101c19:	00 
 f0101c1a:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0101c21:	e8 6e e4 ff ff       	call   f0100094 <_panic>
@@ -3450,7 +3450,7 @@ f0101c2e:	c7 44 24 0c a8 35 10 	movl   $0xf01035a8,0xc(%esp)
 f0101c35:	f0 
 f0101c36:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101c3d:	f0 
-f0101c3e:	c7 44 24 04 5e 03 00 	movl   $0x35e,0x4(%esp)
+f0101c3e:	c7 44 24 04 61 03 00 	movl   $0x361,0x4(%esp)
 f0101c45:	00 
 f0101c46:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0101c4d:	e8 42 e4 ff ff       	call   f0100094 <_panic>
@@ -3459,7 +3459,7 @@ f0101c52:	c7 44 24 0c dc 35 10 	movl   $0xf01035dc,0xc(%esp)
 f0101c59:	f0 
 f0101c5a:	c7 44 24 08 3a 36 10 	movl   $0xf010363a,0x8(%esp)
 f0101c61:	f0 
-f0101c62:	c7 44 24 04 5f 03 00 	movl   $0x35f,0x4(%esp)
+f0101c62:	c7 44 24 04 62 03 00 	movl   $0x362,0x4(%esp)
 f0101c69:	00 
 f0101c6a:	c7 04 24 14 36 10 f0 	movl   $0xf0103614,(%esp)
 f0101c71:	e8 1e e4 ff ff       	call   f0100094 <_panic>
