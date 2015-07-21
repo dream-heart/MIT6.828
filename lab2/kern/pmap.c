@@ -540,8 +540,16 @@ page_insert(pde_t *pgdir, struct PageInfo *pp, void *va, int perm)
 struct PageInfo *
 page_lookup(pde_t *pgdir, void *va, pte_t **pte_store)
 {
+	pte_t * pageTable = pgdir_walk(pgdir, va,0);
+	if(pageTable == NULL )
+		return NULL;
+	if( pte_store != NULL)
+		*pte_store = pageTable;
+	struct PageInfo* ret = pa2page( (pte_t) pageTable);
+	return ret;
+
 	// Fill this function in
-	return NULL;
+	
 }
 
 //
@@ -561,8 +569,18 @@ page_lookup(pde_t *pgdir, void *va, pte_t **pte_store)
 //
 void
 page_remove(pde_t *pgdir, void *va)
-{
-	// Fill this function in
+{	
+	//有问题  还要再看看
+	pte_t * pt_store ;
+	struct PageInfo* phyPage = page_lookup(pgdir, va, pt_store);
+	if(phyPage == 0)
+		return ;
+	page_decref(phyPage);
+	
+	
+	*pt_store = 0;
+	tlb_invalidate(pgdir,va);
+	return;
 }
 
 //
