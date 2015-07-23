@@ -399,72 +399,30 @@ page_decref(struct PageInfo* pp)
 //
 pte_t *
 pgdir_walk(pde_t *pgdir, const void *va, int create)
-{	//typedef uint32_t physaddr_t;
-	/*******************************************************/
-	//疑问：虚拟地址进行转换时，就二级页表来说，通过虚拟地址高10位得到的其一级页表的对应的地址是否是物理地址？
-	//即存储在的页表基地址是不是物理地址？
-	//是物理地址，保存在cr3寄存器中。
-	// Fill this function in
-	//取得va的 Page Directory INDEX 的值
+{	
+	unsigned int pdOffset =(physaddr_t)(va) >>22 & 0x3FF;
 	//
-	unsigned int pageDirIndex= (physaddr_t)(va) >> 22 & 0x3FF ;
-	
-	//从Page Directory INDEX中取出对应的page table的地址
+	// va->base address of the pte; has not add the pageTable offset;
 	//
-	physaddr_t* pageTableBaseAddrePointer  = (physaddr_t*)  (pgdir + pageDirIndex);
-	
-	//如果pageTable还没有被创建，而且create==0，则return NULL
-	//地址获取失败。
-	//
-	
-	if(pageTableBaseAddrePointer == NULL &&  create == 0)
-		return NULL;
-	//
-	//create==1,则需要创建page table
-	//
-	else if (pageTableBaseAddrePointer == NULL &&  create == 0)
-	{	
-		struct PageInfo *pageTable = page_alloc(1);
-		// 申请新页面失败，此时创建page table 失败 return NULL；
-		//
-		if(pageTable == NULL )
+	pte_t* vaPTEBaseAddrePointer = pgdir + pdOffset;
+	if(*vaPTEBaseAddrePointer == 0 )
+	{
+		if(create == 0)
 			return NULL;
-		pageTable->pp_ref++;
-		//计算page table的物理地址 通过得到的pageTable的下标可以得到
-		//注意，新申请的新的页面的基地址最低的12位肯定是0，因为页面是4K对齐的，其低12位地址可以用来表示属性
-		physaddr_t pageTableBaseAddre = 0;
-		pageTableBaseAddre =  ((physaddr_t ) (pageTable - pages) <<12);
-		pageTableBaseAddre =  pageTableBaseAddre |PTE_P |PTE_W | PTE_U;
-		//page_alloc是不会对新申请的内存的pp_ref+1的，所以要手动加上
-		//
-		physaddr_t* Page = pgdir + pageDirIndex;
-		*Page = pageTableBaseAddre;
-		//fangllihui
-		//初始化页面指向的物理地址
-		/**********************
-		physaddr_t basePhyAdd = ( (physaddr_t)va-KERNBASE)>>12<<12;
-		int i = 0;
-		for( i = 0; i< 1<<10;i++){
-			*(pageTableBaseAddre + i) = (physaddr_t)  ( (physaddr_t *) basePhyAdd +i );
-		}
-		**************************************/
+		struct PageInfo* newPage = page_alloc(1);
+		if(newPage == NULL)
+			return NULL;
+		newPage->pp_ref++;
+		*vaPTEBaseAddrePointer = (physaddr_t) page2pa(newPage);
+		*vaPTEBaseAddrePointer |= (PTE_P |PTE_W | PTE_U);
 	}
-	//取出va对应的page table index
-	
-	unsigned int pageTableOffset = (physaddr_t ) (va) >> 12 & 0x3FF;
-	
-	physaddr_t pageTableAddre = (*pageTableBaseAddrePointer>>12<<12) + pageTableOffset;
-	return (physaddr_t*) pageTableAddre;
-	/**********************8
-	//通过page table index，得到va的物理地址。
-	physaddr_t*  vaPhyAddre = (physaddr_t*)  (pageTableBaseAddre + pageTableIndex);
-	vaPhyAddre =(physaddr_t*) (
-				(physaddr_t) (vaPhyAddre) >>12<<12);
-	unsigned int offset = (physaddr_t) va &0xFFF;
-	vaPhyAddre = (physaddr_t *) vaPhyAddre +  offset;
-	return vaPhyAddre;
-	**********************************************/
+
+	unsigned int ptOffset = (physaddr_t)(va) >>12 & 0x3FF;
+	pte_t* vaPTE = (physaddr_t*) ((*vaPTEBaseAddrePointer >> 12 << 12) +ptOffset) ;
+	return vaPTE;
 }
+
+	
 
 //
 // Map [va, va+size) of virtual address space to physical [pa, pa+size)
@@ -483,10 +441,13 @@ boot_map_region(pde_t *pgdir, uintptr_t va, size_t size, physaddr_t pa, int perm
 	// Fill this function in
 	while(size)
 	{
-		pde_t *pageTable = pgdir_walk(pgdir, (pde_t*)va, 1);
-		if(pageTable == 0)
+		pde_t *vaPageTable = pgdir_walk(pgdir, (void *)va, 1);
+		if(vaPageTable == NULL)
 			return ;
-		*pageTable = pa | perm|PTE_P;
+		//
+		//notice: the pa and va is page-aligned, so the offset is zero;
+		//
+		*vaPageTable = pa | perm | PTE_P;
 		va += PGSIZE;
 		pa +=PGSIZE;
 		size -=PGSIZE; 		
