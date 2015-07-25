@@ -413,13 +413,18 @@ pgdir_walk(pde_t *pgdir, const void *va, int create)
 		if(newPage == NULL)
 			return NULL;
 		newPage->pp_ref++;
-		*vaPTEBaseAddrePointer = (physaddr_t) page2pa(newPage);
+		*vaPTEBaseAddrePointer = (physaddr_t) page2pa(newPage);	//物理地址
 		*vaPTEBaseAddrePointer |= (PTE_P |PTE_W | PTE_U);
 	}
 
 	unsigned int ptOffset = (physaddr_t)(va) >>12 & 0x3FF;
-	pte_t* vaPTE = (physaddr_t*) ((*vaPTEBaseAddrePointer >> 12 << 12) +ptOffset) ;
-	return vaPTE;
+	pte_t PTEpa = *vaPTEBaseAddrePointer & (~0xFFF); 	//va对应的pte页表的物理地址， 没有加上pte的偏移量
+	pte_t* vpte = KADDR(PTEpa);				//得到PTEpad的虚拟地址（+kernbase）
+	return &vpte[ptOffset];					//返回的是va对应的pte项的虚拟地址
+	//需要返回虚拟地址，而不是物理地址，搞死人啊！！！
+	//pte_t* vaPTE = (physaddr_t*) ((*vaPTEBaseAddrePointer >> 12 << 12) +ptOffset) ;
+	//return vaPTE;
+
 }
 
 	
@@ -483,8 +488,23 @@ boot_map_region(pde_t *pgdir, uintptr_t va, size_t size, physaddr_t pa, int perm
 int
 page_insert(pde_t *pgdir, struct PageInfo *pp, void *va, int perm)
 {
-	// Fill this function in
-	return 0;
+	pte_t* vaPT = pgdir_walk(pgdir,va,1);
+	if(vaPT == NULL)
+		return -E_NO_MEM;
+	// va 已经指向了pp
+	if( (*vaPT & ~0xFFF) == page2pa(pp) )	//*vaPT里面存储的是va所在页的物理地址
+		{
+			tlb_invalidate(pgdir,va);
+			pp->pp_ref--;
+		}
+	//若va已经分配，则取消其分配 简单检测*vaPT里面的值是否是0来判断
+	else  if(*vaPT != 0)	
+		page_remove(pgdir,va);
+	//*vaPT = page2pa(pp);
+	//pte_t test = *vaPT;
+	vaPT[0] = page2pa(pp)| perm | PTE_P;
+	pp->pp_ref ++;
+	return 0; 
 }
 
 //
@@ -506,7 +526,8 @@ page_lookup(pde_t *pgdir, void *va, pte_t **pte_store)
 		return NULL;
 	if( pte_store != NULL)
 		*pte_store = pageTable;
-	struct PageInfo* ret = pa2page( (pte_t) pageTable);
+	//struct PageInfo* ret = pa2page( (pte_t) pageTable);
+	struct PageInfo* ret = pa2page(  *pageTable & ~0xFFF);	//pgdir_walk中给出的pageTable的地址是虚拟地址
 	return ret;
 
 	// Fill this function in
@@ -532,14 +553,13 @@ void
 page_remove(pde_t *pgdir, void *va)
 {	
 	//有问题  还要再看看
-	pte_t * pt_store ;
+	pte_t * pte = 0 ;
+	pte_t ** pt_store = &pte;
 	struct PageInfo* phyPage = page_lookup(pgdir, va, pt_store);
 	if(phyPage == 0)
 		return ;
 	page_decref(phyPage);
-	
-	
-	*pt_store = 0;
+	*pte = 0;
 	tlb_invalidate(pgdir,va);
 	return;
 }
