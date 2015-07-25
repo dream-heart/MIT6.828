@@ -72,9 +72,9 @@ f0103e60 r shiftcode
 f0104178 r commands
 f0104e20 r error_string
 f0104e50 R __STAB_BEGIN__
-f010aab4 R __STAB_END__
-f010aab5 R __STABSTR_BEGIN__
-f010c838 R __STABSTR_END__
+f010aaa8 R __STAB_END__
+f010aaa9 R __STABSTR_BEGIN__
+f010c801 R __STABSTR_END__
 f010d000 D bootstack
 f0115000 D bootstacktop
 f0115000 D entry_pgdir

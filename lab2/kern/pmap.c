@@ -1,5 +1,15 @@
 /* See COPYRIGHT for copyright information. */
 
+//有疑问
+//page_insert()  中的  tlb_invalidate(pgdir,va);
+ //padir_walk()  中的	*pgdir |= (PTE_P |PTE_W | PTE_U);	
+//padir_walk()  中的	else  if(*PT != 0)	   此时，以PT中是否为0来判断va是否指向页面
+//page_remove()	 	tlb_invalidate(pgdir,va)函数
+//
+
+//
+
+
 #include <inc/x86.h>
 #include <inc/mmu.h>
 #include <inc/error.h>
@@ -400,12 +410,12 @@ page_decref(struct PageInfo* pp)
 pte_t *
 pgdir_walk(pde_t *pgdir, const void *va, int create)
 {	
-	unsigned int pdOffset =(physaddr_t)(va) >>22 & 0x3FF;
+	unsigned int pdx =(physaddr_t)(va) >>22 & 0x3FF;
 	//
 	// va->base address of the pte; has not add the pageTable offset;
 	//
-	pte_t* vaPTEBaseAddrePointer = pgdir + pdOffset;
-	if(*vaPTEBaseAddrePointer == 0 )
+	pgdir = pgdir + pdx;
+	if(*pgdir == 0 )
 	{
 		if(create == 0)
 			return NULL;
@@ -413,14 +423,14 @@ pgdir_walk(pde_t *pgdir, const void *va, int create)
 		if(newPage == NULL)
 			return NULL;
 		newPage->pp_ref++;
-		*vaPTEBaseAddrePointer = (physaddr_t) page2pa(newPage);	//物理地址
-		*vaPTEBaseAddrePointer |= (PTE_P |PTE_W | PTE_U);
+		*pgdir = page2pa(newPage);	//物理地址
+		*pgdir |= (PTE_P |PTE_W | PTE_U);	//不懂
 	}
 
-	unsigned int ptOffset = (physaddr_t)(va) >>12 & 0x3FF;
-	pte_t PTEpa = *vaPTEBaseAddrePointer & (~0xFFF); 	//va对应的pte页表的物理地址， 没有加上pte的偏移量
-	pte_t* vpte = KADDR(PTEpa);				//得到PTEpad的虚拟地址（+kernbase）
-	return &vpte[ptOffset];					//返回的是va对应的pte项的虚拟地址
+	unsigned int ptx = (physaddr_t)(va) >>12 & 0x3FF;
+	pte_t pte_pa = *pgdir & (~0xFFF); 				//va对应的pte页表的首项物理地址 
+	pte_t* vPte = KADDR(pte_pa);				//得到pte的虚拟地址（+kernbase）,并把地址赋给vPte;
+	return &vPte[ptx];					//返回的是va对应的pte项的虚拟地址
 	//需要返回虚拟地址，而不是物理地址，搞死人啊！！！
 	//pte_t* vaPTE = (physaddr_t*) ((*vaPTEBaseAddrePointer >> 12 << 12) +ptOffset) ;
 	//return vaPTE;
@@ -488,21 +498,21 @@ boot_map_region(pde_t *pgdir, uintptr_t va, size_t size, physaddr_t pa, int perm
 int
 page_insert(pde_t *pgdir, struct PageInfo *pp, void *va, int perm)
 {
-	pte_t* vaPT = pgdir_walk(pgdir,va,1);
-	if(vaPT == NULL)
+	pte_t* PT = pgdir_walk(pgdir,va,1);
+	if(PT == NULL)
 		return -E_NO_MEM;
 	// va 已经指向了pp
-	if( (*vaPT & ~0xFFF) == page2pa(pp) )	//*vaPT里面存储的是va所在页的物理地址
+	if( (*PT & ~0xFFF) == page2pa(pp) )	//*vaPT里面存储的是va所在页的物理地址
 		{
-			tlb_invalidate(pgdir,va);
+			tlb_invalidate(pgdir,va);	//为什么？
 			pp->pp_ref--;
 		}
 	//若va已经分配，则取消其分配 简单检测*vaPT里面的值是否是0来判断
-	else  if(*vaPT != 0)	
+	else  if(*PT != 0)	
 		page_remove(pgdir,va);
 	//*vaPT = page2pa(pp);
 	//pte_t test = *vaPT;
-	vaPT[0] = page2pa(pp)| perm | PTE_P;
+	PT[0] = page2pa(pp)| perm | PTE_P;
 	pp->pp_ref ++;
 	return 0; 
 }
@@ -521,14 +531,14 @@ page_insert(pde_t *pgdir, struct PageInfo *pp, void *va, int perm)
 struct PageInfo *
 page_lookup(pde_t *pgdir, void *va, pte_t **pte_store)
 {
-	pte_t * pageTable = pgdir_walk(pgdir, va,0);
-	if(pageTable == NULL )
+	pte_t * pt = pgdir_walk(pgdir, va,0);
+	if(pt == NULL )
 		return NULL;
 	if( pte_store != NULL)
-		*pte_store = pageTable;
+		*pte_store = pt;
 	//struct PageInfo* ret = pa2page( (pte_t) pageTable);
-	struct PageInfo* ret = pa2page(  *pageTable & ~0xFFF);	//pgdir_walk中给出的pageTable的地址是虚拟地址
-	return ret;
+	struct PageInfo* page = pa2page(  *pt & ~0xFFF);	//pgdir_walk中给出的pageTable的地址是虚拟地址
+	return page;
 
 	// Fill this function in
 	
@@ -560,7 +570,12 @@ page_remove(pde_t *pgdir, void *va)
 		return ;
 	page_decref(phyPage);
 	*pte = 0;
-	tlb_invalidate(pgdir,va);
+	//
+	//remove的操作相当于把va和其对应的物理地址断开联系，感觉只有在va重新映射的时候
+	//才会调用这个函数。而tlb_invalidate(va)函数的作用，就是把TLB中，va的缓存清除掉。
+	//TLB，mmu的转换缓存，以并行方式查找，速度很快，是va->pa转换速度的前提。
+	//
+	tlb_invalidate(pgdir,va);	
 	return;
 }
 
