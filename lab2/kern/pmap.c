@@ -207,7 +207,18 @@ mem_init(void)
 	//      (ie. perm = PTE_U | PTE_P)
 	//    - pages itself -- kernel RW, user NONE
 	// Your code goes here:
-
+		int perm = PTE_U | PTE_P ;
+		int state = page_insert(kern_pgdir, pa2page (PADDR(pages) ), (void*) UPAGES, perm);
+		//assert(check_va2pa(pgdir, UPAGES + i) == PADDR(pages) + i);
+		//test
+		/*************************
+		int a = check_va2pa(kern_pgdir, UPAGES );
+		int b = PADDR(pages) ;
+		int c = PADDR(pages) + 1;
+		cprintf( "check_va2pa(kern_pgdir, UPAGES ) =  %d  ", a);
+		cprintf("   PADDR(pages) =   %d ",b);
+		cprintf("\n");
+		**********************************************/
 	//////////////////////////////////////////////////////////////////////
 	// Use the physical memory that 'bootstack' refers to as the kernel
 	// stack.  The kernel stack grows down from virtual address KSTACKTOP.
@@ -752,7 +763,7 @@ check_kern_pgdir(void)
 	// check pages array
 	n = ROUNDUP(npages*sizeof(struct PageInfo), PGSIZE);
 	for (i = 0; i < n; i += PGSIZE)
-		assert(check_va2pa(pgdir, UPAGES + i) == PADDR(pages) + i);
+	assert(check_va2pa(pgdir, UPAGES + i) == PADDR(pages) + i);
 
 
 	// check phys mem
