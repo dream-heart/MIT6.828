@@ -7,6 +7,7 @@
 //page_remove()	 	tlb_invalidate(pgdir,va)函数
 //
 
+
 //
 
 
@@ -207,18 +208,17 @@ mem_init(void)
 	//      (ie. perm = PTE_U | PTE_P)
 	//    - pages itself -- kernel RW, user NONE
 	// Your code goes here:
+	//把UPAGES指向pages的所有页面
+	//UPAGES指向pages地址所在的页面。
 		int perm = PTE_U | PTE_P ;
-		int state = page_insert(kern_pgdir, pa2page (PADDR(pages) ), (void*) UPAGES, perm);
-		//assert(check_va2pa(pgdir, UPAGES + i) == PADDR(pages) + i);
-		//test
-		/*************************
-		int a = check_va2pa(kern_pgdir, UPAGES );
-		int b = PADDR(pages) ;
-		int c = PADDR(pages) + 1;
-		cprintf( "check_va2pa(kern_pgdir, UPAGES ) =  %d  ", a);
-		cprintf("   PADDR(pages) =   %d ",b);
-		cprintf("\n");
-		**********************************************/
+		int i = 0;
+		n = ROUNDUP(npages*sizeof(struct PageInfo), PGSIZE);
+		for (i = 0; i < n; i += PGSIZE)
+			page_insert(kern_pgdir, pa2page(PADDR(pages) + i), (void *) (UPAGES +i), perm);
+		//cprintf("Upages = %x\n", check_va2pa(kern_pgdir, UPAGES) );
+		//cprintf("pages = %x\n", page2pa(pages));
+		//panic("this is a test;\n");
+		
 	//////////////////////////////////////////////////////////////////////
 	// Use the physical memory that 'bootstack' refers to as the kernel
 	// stack.  The kernel stack grows down from virtual address KSTACKTOP.
@@ -231,6 +231,8 @@ mem_init(void)
 	//     Permissions: kernel RW, user NONE
 	// Your code goes here:
 
+		boot_map_region(kern_pgdir, KSTACKTOP-KSTKSIZE, ROUNDUP(KSTKSIZE, PGSIZE), PADDR(bootstack), PTE_W |PTE_P);
+//boot_map_region(pde_t *pgdir, uintptr_t va, size_t size, physaddr_t pa, int perm)
 	//////////////////////////////////////////////////////////////////////
 	// Map all of physical memory at KERNBASE.
 	// Ie.  the VA range [KERNBASE, 2^32) should map to
@@ -239,6 +241,10 @@ mem_init(void)
 	// we just set up the mapping anyway.
 	// Permissions: kernel RW, user NONE
 	// Your code goes here:
+	unsigned int size = ~0;
+	size = size - KERNBASE + 1; 
+	size = ROUNDUP(size, PGSIZE);
+	boot_map_region(kern_pgdir, KERNBASE, size, (uintptr_t)0, PTE_W |PTE_P);
 
 	// Check that the initial page directory has been set up correctly.
 	check_kern_pgdir();
@@ -506,6 +512,7 @@ boot_map_region(pde_t *pgdir, uintptr_t va, size_t size, physaddr_t pa, int perm
 // Hint: The TA solution is implemented using pgdir_walk, page_remove,
 // and page2pa.
 //
+//把va指向pp所对应的物理地址，即 (pp-pages)<<12
 int
 page_insert(pde_t *pgdir, struct PageInfo *pp, void *va, int perm)
 {
