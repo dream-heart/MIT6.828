@@ -2338,7 +2338,7 @@ f0100f57:	c1 eb 16             	shr    $0x16,%ebx
 	pgdir = pgdir + pdx;
 f0100f5a:	c1 e3 02             	shl    $0x2,%ebx
 f0100f5d:	03 5d 08             	add    0x8(%ebp),%ebx
-	if(*pgdir == 0 )
+	if( ! pgdir[0] & PTE_P  )	//判断页面是否有效，即va是否有映射
 f0100f60:	83 3b 00             	cmpl   $0x0,(%ebx)
 f0100f63:	75 2c                	jne    f0100f91 <pgdir_walk+0x47>
 	{
@@ -2400,7 +2400,7 @@ f0100fce:	8d 84 b0 00 00 00 f0 	lea    -0x10000000(%eax,%esi,4),%eax
 f0100fd5:	eb 0c                	jmp    f0100fe3 <pgdir_walk+0x99>
 	//
 	pgdir = pgdir + pdx;
-	if(*pgdir == 0 )
+	if( ! pgdir[0] & PTE_P  )	//判断页面是否有效，即va是否有映射
 	{
 		if(create == 0)
 			return NULL;

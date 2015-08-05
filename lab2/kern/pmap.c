@@ -2,10 +2,10 @@
 
 //有疑问
 //page_insert()  中的  tlb_invalidate(pgdir,va);
- //padir_walk()  中的	*pgdir |= (PTE_P |PTE_W | PTE_U);	
-//padir_walk()  中的	else  if(*PT != 0)	   此时，以PT中是否为0来判断va是否指向页面
+ //pgdir_walk()  中的	*pgdir |= (PTE_P |PTE_W | PTE_U);	
+//()  中的	else  if(*PT != 0)	   此时，以PT中是否为0来判断va是否指向页面
 //page_remove()	 	tlb_invalidate(pgdir,va)函数
-//
+//PET_U 位， 控制用户程序是否能够访问此内存地址
 
 
 //
@@ -432,7 +432,7 @@ pgdir_walk(pde_t *pgdir, const void *va, int create)
 	// va->base address of the pte; has not add the pageTable offset;
 	//
 	pgdir = pgdir + pdx;
-	if(*pgdir == 0 )
+	if( ! pgdir[0] & PTE_P  )	//判断页面是否有效，即va是否有映射
 	{
 		if(create == 0)
 			return NULL;
