@@ -1,4 +1,9 @@
 /* See COPYRIGHT for copyright information. */
+//为什么env的pgdir可以和kern_pgdir一样？  
+//UTOP上面的部分包括内核空间和用户空间的只读部分，所以相当于可以和内核进程共享，所以不用
+//重新创建页面进行相应的映射，只要把pgdir里面地址复制过去就可以，因为页面已经有系统创建好了。(kern_pgdir)
+
+
 
 #include <inc/x86.h>
 #include <inc/mmu.h>
@@ -116,10 +121,27 @@ env_init(void)
 {
 	// Set up envs array
 	// LAB 3: Your code here.
+	env_free_list = 0;
+	int i;
+	for( i = NENV -1; i>=0; i--){
+		envs[i].env_id = 0;
+		envs[i].env_link = env_free_list;
+		env_free_list = &envs[i];
+		
+		memset(&envs[i].env_tf, 0, sizeof(struct Trapframe));
+		
+		envs[i].env_parent_id = 0;
+		envs[i].env_type =  ENV_TYPE_USER;
+		envs[i].env_status = ENV_FREE;
+		envs[i].env_runs = 0;
+		envs[i].env_pgdir = 0;
+	}
 
 	// Per-CPU part of the initialization
 	env_init_percpu();
 }
+
+
 
 // Load GDT and segment descriptors.
 void
@@ -179,6 +201,17 @@ env_setup_vm(struct Env *e)
 	//    - The functions in kern/pmap.h are handy.
 
 	// LAB 3: Your code here.
+	e->env_pgdir =page2kva(p);
+	p->pp_ref++;
+	
+	//照抄pgdir里面的东西,UTOP以上的。
+
+	i =  PDX(UTOP);
+	for(i ; i<1024; i++)
+		e->env_pgdir[i] = kern_pgdir[i];
+
+
+
 
 	// UVPT maps the env's own page table read-only.
 	// Permissions: kernel R, user R
@@ -267,6 +300,18 @@ region_alloc(struct Env *e, void *va, size_t len)
 	//   'va' and 'len' values that are not page-aligned.
 	//   You should round va down, and round (va + len) up.
 	//   (Watch out for corner-cases!)
+	pde_t* pgdir = e->env_pgdir;
+	int i=0;
+	//page_insert(pde_t *pgdir, struct PageInfo *pp, void *va, int perm)
+	//struct PageInfo *page_alloc(int alloc_flags)
+	int npages = (ROUNDUP((pte_t)va + len, PGSIZE) - ROUNDDOWN((pte_t)va, PGSIZE)) / PGSIZE;
+	for(;i<npages;i++){
+		struct PageInfo* newPage = page_alloc(0);
+		if(newPage == 0)
+			panic("there is no more page to region_alloc for env\n");
+		page_insert(pgdir, newPage, va+i*PGSIZE, PTE_U|PTE_W );
+	}
+	return ;
 }
 
 //

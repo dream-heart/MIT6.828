@@ -4,7 +4,7 @@
 //page_insert()则是考虑了va的本来的映射关系，感觉是真正映射到物理内存的。
 //page_insert()是va和物理页向关联，而boot_map_region()是和物理地址之间关联。
 
-
+//用户进程是在用户空间运行的，其需要在硬盘上有内容，才能加载到内存中，即地址空间中的内容。
 #include <inc/x86.h>
 #include <inc/mmu.h>
 #include <inc/error.h>
