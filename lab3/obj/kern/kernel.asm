@@ -5607,7 +5607,7 @@ f01030af:	77 20                	ja     f01030d1 <env_free+0x43>
 f01030b1:	89 54 24 0c          	mov    %edx,0xc(%esp)
 f01030b5:	c7 44 24 08 60 4d 10 	movl   $0xf0104d60,0x8(%esp)
 f01030bc:	f0 
-f01030bd:	c7 44 24 04 95 01 00 	movl   $0x195,0x4(%esp)
+f01030bd:	c7 44 24 04 b0 01 00 	movl   $0x1b0,0x4(%esp)
 f01030c4:	00 
 f01030c5:	c7 04 24 d2 56 10 f0 	movl   $0xf01056d2,(%esp)
 f01030cc:	e8 e5 cf ff ff       	call   f01000b6 <_panic>
@@ -5669,7 +5669,7 @@ f0103137:	72 20                	jb     f0103159 <env_free+0xcb>
 f0103139:	89 74 24 0c          	mov    %esi,0xc(%esp)
 f010313d:	c7 44 24 08 1c 4c 10 	movl   $0xf0104c1c,0x8(%esp)
 f0103144:	f0 
-f0103145:	c7 44 24 04 a4 01 00 	movl   $0x1a4,0x4(%esp)
+f0103145:	c7 44 24 04 bf 01 00 	movl   $0x1bf,0x4(%esp)
 f010314c:	00 
 f010314d:	c7 04 24 d2 56 10 f0 	movl   $0xf01056d2,(%esp)
 f0103154:	e8 5d cf ff ff       	call   f01000b6 <_panic>
@@ -5770,7 +5770,7 @@ f01031f3:	77 20                	ja     f0103215 <env_free+0x187>
 f01031f5:	89 44 24 0c          	mov    %eax,0xc(%esp)
 f01031f9:	c7 44 24 08 60 4d 10 	movl   $0xf0104d60,0x8(%esp)
 f0103200:	f0 
-f0103201:	c7 44 24 04 b2 01 00 	movl   $0x1b2,0x4(%esp)
+f0103201:	c7 44 24 04 cd 01 00 	movl   $0x1cd,0x4(%esp)
 f0103208:	00 
 f0103209:	c7 04 24 d2 56 10 f0 	movl   $0xf01056d2,(%esp)
 f0103210:	e8 a1 ce ff ff       	call   f01000b6 <_panic>
@@ -5866,7 +5866,7 @@ f01032b0:	cf                   	iret
 	panic("iret failed");  /* mostly to placate the compiler */
 f01032b1:	c7 44 24 08 08 57 10 	movl   $0xf0105708,0x8(%esp)
 f01032b8:	f0 
-f01032b9:	c7 44 24 04 da 01 00 	movl   $0x1da,0x4(%esp)
+f01032b9:	c7 44 24 04 f5 01 00 	movl   $0x1f5,0x4(%esp)
 f01032c0:	00 
 f01032c1:	c7 04 24 d2 56 10 f0 	movl   $0xf01056d2,(%esp)
 f01032c8:	e8 e9 cd ff ff       	call   f01000b6 <_panic>
@@ -5889,7 +5889,7 @@ f01032d0:	83 ec 18             	sub    $0x18,%esp
 	panic("env_run not yet implemented");
 f01032d3:	c7 44 24 08 14 57 10 	movl   $0xf0105714,0x8(%esp)
 f01032da:	f0 
-f01032db:	c7 44 24 04 f9 01 00 	movl   $0x1f9,0x4(%esp)
+f01032db:	c7 44 24 04 14 02 00 	movl   $0x214,0x4(%esp)
 f01032e2:	00 
 f01032e3:	c7 04 24 d2 56 10 f0 	movl   $0xf01056d2,(%esp)
 f01032ea:	e8 c7 cd ff ff       	call   f01000b6 <_panic>

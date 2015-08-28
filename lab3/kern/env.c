@@ -309,7 +309,9 @@ region_alloc(struct Env *e, void *va, size_t len)
 		struct PageInfo* newPage = page_alloc(0);
 		if(newPage == 0)
 			panic("there is no more page to region_alloc for env\n");
-		page_insert(pgdir, newPage, va+i*PGSIZE, PTE_U|PTE_W );
+		int ret = page_insert(pgdir, newPage, va+i*PGSIZE, PTE_U|PTE_W );
+		if(!ret)
+			panic("page_insert fail\n");
 	}
 	return ;
 }
@@ -368,11 +370,36 @@ load_icode(struct Env *e, uint8_t *binary)
 	//  What?  (See env_run() and env_pop_tf() below.)
 
 	// LAB 3: Your code here.
+		struct Elf* elf = (struct Elf*) binary;
+		if (elf->e_magic != ELF_MAGIC)
+			panic("e_magic is not right\n");
+		//首先要更改私有地址的pgdir
+		lcr3( PADDR(e->env_pgdir));
+		struct Proghdr *ph =0;
+		int phNum=0;
+		pte_t* va=0;
+		pte_t* file_a = 0;
+
+		ph = (struct Proghdr*) ( binary + elf->e_phoff );
+		phNum = elf->e_phnum;
+		int i=0;
+		for(i=0; i<phNum; i++){	
+			ph = ph + i;
+			//可载入段
+			if(ph->p_type == ELF_PROG_LOAD){
+				region_alloc(e, (void *)ph->p_va, ph->p_memsz);	//为va申请地址。
+				memmove((void*)ph->p_va, (void*)(binary + ph->p_offset), ph->p_filesz);
+				memset((void*) (ph->p_va + ph->p_filesz), 0, ph->p_memsz - ph->p_filesz);
+			}	
+		}
+
+		e->env_tf.tf_eip = elf->e_entry;
 
 	// Now map one page for the program's initial stack
 	// at virtual address USTACKTOP - PGSIZE.
-
 	// LAB 3: Your code here.
+		struct PageInfo * stackPage = page_alloc(1);
+		page_insert(e->env_pgdir, stackPage, (void*)USTACKTOP-PGSIZE,PTE_U|PTE_W );
 }
 
 //
