@@ -114,7 +114,6 @@ boot_alloc(uint32_t n)
 	return result;
 
 }
-
 // Set up a two-level page table:
 //    kern_pgdir is its linear (virtual) address of the root
 //
