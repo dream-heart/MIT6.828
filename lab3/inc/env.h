@@ -13,9 +13,9 @@ typedef int32_t envid_t;
 //
 // +1+---------------21-----------------+--------10--------+
 // |0|          Uniqueifier             |   Environment    |
-// | |                                  |      Index       |
-// +------------------------------------+------------------+
-//                                       \--- ENVX(eid) --/
+// | |                                         |      Index            |
+// +------------------------------------+-----------------------+
+//                                               \--- ENVX(eid) ------/
 //
 // The environment index ENVX(eid) equals the environment's offset in the
 // 'envs[]' array.  The uniqueifier distinguishes environments that were

@@ -30,7 +30,10 @@ syscall(int num, int check, uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4, 
 		  "D" (a4),
 		  "S" (a5)
 		: "cc", "memory");
-
+	//D EDI,
+	//S  ESI 
+	//"memory""
+	//代表不使用寄存器作为缓存存储变量，2.不打乱执行顺序
 	if(check && ret > 0)
 		panic("syscall %d returned %d (> 0)", num, ret);
 

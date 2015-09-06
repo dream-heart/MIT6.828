@@ -20,6 +20,7 @@
  *   void NAME();
  * where NAME is the argument passed to TRAPHANDLER.
  */
+
 #define TRAPHANDLER(name, num)						\
 	.globl name;		/* define global symbol for 'name' */	\
 	.type name, @function;	/* symbol type is function */		\
@@ -27,6 +28,7 @@
 	name:			/* function starts here */		\
 	pushl $(num);							\
 	jmp _alltraps
+
 
 /* Use TRAPHANDLER_NOEC for traps where the CPU doesn't push an error code.
  * It pushes a 0 in place of the error code, so the trap frame has the same
@@ -47,9 +49,41 @@
  * Lab 3: Your code here for generating entry points for the different traps.
  */
 
+	TRAPHANDLER_NOEC(divide_error, T_DIVIDE)				# divide error
+	TRAPHANDLER_NOEC(debug, T_DEBUG)					# debug exception
+	TRAPHANDLER_NOEC(nmi, T_NMI)					# non-maskable interrupt
+   	 TRAPHANDLER_NOEC(breakpoint, T_BRKPT)				# breakpoint
+	TRAPHANDLER_NOEC(overflow, T_OFLOW)				# overflow
+	TRAPHANDLER_NOEC(bounds, T_BOUND)				# bounds check
+	TRAPHANDLER_NOEC(invalid_op, T_ILLOP)				# illegal opcode
+	TRAPHANDLER_NOEC(device_not_available, T_DEVICE)			# device not available
+	TRAPHANDLER(double_fault, T_DBLFLT)					# double fault
+	TRAPHANDLER(invalid_TSS, T_TSS)					# invalid task switch segment
+	TRAPHANDLER(segment_not_present, T_SEGNP)				# segment not present
+	TRAPHANDLER(stack_segment, T_STACK)					# stack exception
+	TRAPHANDLER(general_protection, T_GPFLT)				# general protection fault
+	TRAPHANDLER(page_fault, T_PGFLT)					# page fault
+	TRAPHANDLER_NOEC(float_point_error, T_FPERR)				# floating point error
+	TRAPHANDLER(alignment_check, T_ALIGN)				# alignment check
+	TRAPHANDLER_NOEC(machine_check, T_MCHK)				# machine check
+	TRAPHANDLER_NOEC(SIMD_float_point_error, T_SIMDERR)		# SIMD floating point error
+
+	TRAPHANDLER(system_call, T_SYSCALL)					#system call
 
 
 /*
  * Lab 3: Your code here for _alltraps
  */
+.globl _alltraps
+_alltraps:
+	pushl %ds
+	pushl %es
+	pushal
+	movl $GD_KD, %eax
+	movw %ax, %ds
+	movw %ax, %es
+
+	push %esp
+	call trap
+	
 
