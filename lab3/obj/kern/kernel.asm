@@ -112,17 +112,17 @@ f0100086:	e8 fc 2f 00 00       	call   f0103087 <env_init>
 	trap_init();
 f010008b:	90                   	nop
 f010008c:	8d 74 26 00          	lea    0x0(%esi,%eiz,1),%esi
-f0100090:	e8 ee 36 00 00       	call   f0103783 <trap_init>
-
+f0100090:	e8 e8 36 00 00       	call   f010377d <trap_init>
 #if defined(TEST)
 	// Don't touch -- used by grading script!
 	ENV_CREATE(TEST, ENV_TYPE_USER);
+#else
+	// Touch all you want.
+	ENV_CREATE(user_hello, ENV_TYPE_USER);
 f0100095:	c7 44 24 04 00 00 00 	movl   $0x0,0x4(%esp)
 f010009c:	00 
 f010009d:	c7 04 24 56 b3 11 f0 	movl   $0xf011b356,(%esp)
 f01000a4:	e8 b4 31 00 00       	call   f010325d <env_create>
-	// Touch all you want.
-	ENV_CREATE(user_hello, ENV_TYPE_USER);
 #endif // TEST*
 
 	// We only have one user environment for now, so just run it.
@@ -1224,7 +1224,7 @@ f010077e:	74 0b                	je     f010078b <monitor+0x32>
 		print_trapframe(tf);
 f0100780:	8b 45 08             	mov    0x8(%ebp),%eax
 f0100783:	89 04 24             	mov    %eax,(%esp)
-f0100786:	e8 2a 34 00 00       	call   f0103bb5 <print_trapframe>
+f0100786:	e8 24 34 00 00       	call   f0103baf <print_trapframe>
 
 	while (1) {
 		buf = readline("K> ");
@@ -6466,905 +6466,892 @@ f010371c:	c9                   	leave
 f010371d:	c3                   	ret    
 f010371e:	66 90                	xchg   %ax,%ax
 
-f0103720 <breakpoint>:
-static __inline void cpuid(uint32_t info, uint32_t *eaxp, uint32_t *ebxp, uint32_t *ecxp, uint32_t *edxp);
-static __inline uint64_t read_tsc(void) __attribute__((always_inline));
-
-static __inline void
-breakpoint(void)
-{
-f0103720:	55                   	push   %ebp
-f0103721:	89 e5                	mov    %esp,%ebp
-	__asm __volatile("int3");
-f0103723:	cc                   	int3   
-}
-f0103724:	5d                   	pop    %ebp
-f0103725:	c3                   	ret    
-
-f0103726 <trap_init_percpu>:
+f0103720 <trap_init_percpu>:
 }
 
 // Initialize and load the per-CPU TSS and IDT
 void
 trap_init_percpu(void)
 {
-f0103726:	55                   	push   %ebp
-f0103727:	89 e5                	mov    %esp,%ebp
+f0103720:	55                   	push   %ebp
+f0103721:	89 e5                	mov    %esp,%ebp
 	// Setup a TSS so that we get the right stack
 	// when we trap to the kernel.
 	ts.ts_esp0 = KSTACKTOP;
-f0103729:	c7 05 04 d9 17 f0 00 	movl   $0xf0000000,0xf017d904
-f0103730:	00 00 f0 
+f0103723:	c7 05 04 d9 17 f0 00 	movl   $0xf0000000,0xf017d904
+f010372a:	00 00 f0 
 	ts.ts_ss0 = GD_KD;
-f0103733:	66 c7 05 08 d9 17 f0 	movw   $0x10,0xf017d908
-f010373a:	10 00 
+f010372d:	66 c7 05 08 d9 17 f0 	movw   $0x10,0xf017d908
+f0103734:	10 00 
 
 	// Initialize the TSS slot of the gdt.
 	gdt[GD_TSS0 >> 3] = SEG16(STS_T32A, (uint32_t) (&ts),
-f010373c:	66 c7 05 48 b3 11 f0 	movw   $0x67,0xf011b348
-f0103743:	67 00 
-f0103745:	b8 00 d9 17 f0       	mov    $0xf017d900,%eax
-f010374a:	66 a3 4a b3 11 f0    	mov    %ax,0xf011b34a
-f0103750:	89 c2                	mov    %eax,%edx
-f0103752:	c1 ea 10             	shr    $0x10,%edx
-f0103755:	88 15 4c b3 11 f0    	mov    %dl,0xf011b34c
-f010375b:	c6 05 4e b3 11 f0 40 	movb   $0x40,0xf011b34e
-f0103762:	c1 e8 18             	shr    $0x18,%eax
-f0103765:	a2 4f b3 11 f0       	mov    %al,0xf011b34f
+f0103736:	66 c7 05 48 b3 11 f0 	movw   $0x67,0xf011b348
+f010373d:	67 00 
+f010373f:	b8 00 d9 17 f0       	mov    $0xf017d900,%eax
+f0103744:	66 a3 4a b3 11 f0    	mov    %ax,0xf011b34a
+f010374a:	89 c2                	mov    %eax,%edx
+f010374c:	c1 ea 10             	shr    $0x10,%edx
+f010374f:	88 15 4c b3 11 f0    	mov    %dl,0xf011b34c
+f0103755:	c6 05 4e b3 11 f0 40 	movb   $0x40,0xf011b34e
+f010375c:	c1 e8 18             	shr    $0x18,%eax
+f010375f:	a2 4f b3 11 f0       	mov    %al,0xf011b34f
 					sizeof(struct Taskstate) - 1, 0);
 	gdt[GD_TSS0 >> 3].sd_s = 0;
-f010376a:	c6 05 4d b3 11 f0 89 	movb   $0x89,0xf011b34d
+f0103764:	c6 05 4d b3 11 f0 89 	movb   $0x89,0xf011b34d
 }
 
 static __inline void
 ltr(uint16_t sel)
 {
 	__asm __volatile("ltr %0" : : "r" (sel));
-f0103771:	b8 28 00 00 00       	mov    $0x28,%eax
-f0103776:	0f 00 d8             	ltr    %ax
+f010376b:	b8 28 00 00 00       	mov    $0x28,%eax
+f0103770:	0f 00 d8             	ltr    %ax
 }
 
 static __inline void
 lidt(void *p)
 {
 	__asm __volatile("lidt (%0)" : : "r" (p));
-f0103779:	b8 50 b3 11 f0       	mov    $0xf011b350,%eax
-f010377e:	0f 01 18             	lidtl  (%eax)
+f0103773:	b8 50 b3 11 f0       	mov    $0xf011b350,%eax
+f0103778:	0f 01 18             	lidtl  (%eax)
 	// bottom three bits are special; we leave them 0)
 	ltr(GD_TSS0);
 
 	// Load the IDT
 	lidt(&idt_pd);
 }
-f0103781:	5d                   	pop    %ebp
-f0103782:	c3                   	ret    
+f010377b:	5d                   	pop    %ebp
+f010377c:	c3                   	ret    
 
-f0103783 <trap_init>:
+f010377d <trap_init>:
 }
 
 
 void
 trap_init(void)
 {
-f0103783:	55                   	push   %ebp
-f0103784:	89 e5                	mov    %esp,%ebp
-	void alignment_check();
-	void machine_check();
-	void SIMD_float_point_error();
-	void system_call();
+f010377d:	55                   	push   %ebp
+f010377e:	89 e5                	mov    %esp,%ebp
+	void alignment_check1();
+	void machine_check1();
+	void SIMD_float_point_error1();
+	void system_call1();
 
-	SETGATE(idt[T_DIVIDE],0,GD_KT,  divide_error, 0);
-f0103786:	b8 02 3f 10 f0       	mov    $0xf0103f02,%eax
-f010378b:	66 a3 e0 d0 17 f0    	mov    %ax,0xf017d0e0
-f0103791:	66 c7 05 e2 d0 17 f0 	movw   $0x8,0xf017d0e2
-f0103798:	08 00 
-f010379a:	c6 05 e4 d0 17 f0 00 	movb   $0x0,0xf017d0e4
-f01037a1:	c6 05 e5 d0 17 f0 8e 	movb   $0x8e,0xf017d0e5
-f01037a8:	c1 e8 10             	shr    $0x10,%eax
-f01037ab:	66 a3 e6 d0 17 f0    	mov    %ax,0xf017d0e6
-	SETGATE(idt[T_DEBUG],0,GD_KT,  debug , 0);
-f01037b1:	b8 0c 3f 10 f0       	mov    $0xf0103f0c,%eax
-f01037b6:	66 a3 e8 d0 17 f0    	mov    %ax,0xf017d0e8
-f01037bc:	66 c7 05 ea d0 17 f0 	movw   $0x8,0xf017d0ea
-f01037c3:	08 00 
-f01037c5:	c6 05 ec d0 17 f0 00 	movb   $0x0,0xf017d0ec
-f01037cc:	c6 05 ed d0 17 f0 8e 	movb   $0x8e,0xf017d0ed
-f01037d3:	c1 e8 10             	shr    $0x10,%eax
-f01037d6:	66 a3 ee d0 17 f0    	mov    %ax,0xf017d0ee
-	SETGATE(idt[T_NMI],0,GD_KT,  nmi, 0);
-f01037dc:	b8 16 3f 10 f0       	mov    $0xf0103f16,%eax
-f01037e1:	66 a3 f0 d0 17 f0    	mov    %ax,0xf017d0f0
-f01037e7:	66 c7 05 f2 d0 17 f0 	movw   $0x8,0xf017d0f2
-f01037ee:	08 00 
-f01037f0:	c6 05 f4 d0 17 f0 00 	movb   $0x0,0xf017d0f4
-f01037f7:	c6 05 f5 d0 17 f0 8e 	movb   $0x8e,0xf017d0f5
-f01037fe:	c1 e8 10             	shr    $0x10,%eax
-f0103801:	66 a3 f6 d0 17 f0    	mov    %ax,0xf017d0f6
-   	SETGATE(idt[T_BRKPT],0,GD_KT,  breakpoint,3);
-f0103807:	b8 20 37 10 f0       	mov    $0xf0103720,%eax
-f010380c:	66 a3 f8 d0 17 f0    	mov    %ax,0xf017d0f8
-f0103812:	66 c7 05 fa d0 17 f0 	movw   $0x8,0xf017d0fa
-f0103819:	08 00 
-f010381b:	c6 05 fc d0 17 f0 00 	movb   $0x0,0xf017d0fc
-f0103822:	c6 05 fd d0 17 f0 ee 	movb   $0xee,0xf017d0fd
-f0103829:	c1 e8 10             	shr    $0x10,%eax
-f010382c:	66 a3 fe d0 17 f0    	mov    %ax,0xf017d0fe
-	SETGATE(idt[T_OFLOW],0,GD_KT,  overflow, 0);
-f0103832:	b8 2a 3f 10 f0       	mov    $0xf0103f2a,%eax
-f0103837:	66 a3 00 d1 17 f0    	mov    %ax,0xf017d100
-f010383d:	66 c7 05 02 d1 17 f0 	movw   $0x8,0xf017d102
-f0103844:	08 00 
-f0103846:	c6 05 04 d1 17 f0 00 	movb   $0x0,0xf017d104
-f010384d:	c6 05 05 d1 17 f0 8e 	movb   $0x8e,0xf017d105
-f0103854:	c1 e8 10             	shr    $0x10,%eax
-f0103857:	66 a3 06 d1 17 f0    	mov    %ax,0xf017d106
-	SETGATE(idt[T_BOUND],0,GD_KT,  bounds, 0);
-f010385d:	b8 34 3f 10 f0       	mov    $0xf0103f34,%eax
-f0103862:	66 a3 08 d1 17 f0    	mov    %ax,0xf017d108
-f0103868:	66 c7 05 0a d1 17 f0 	movw   $0x8,0xf017d10a
-f010386f:	08 00 
-f0103871:	c6 05 0c d1 17 f0 00 	movb   $0x0,0xf017d10c
-f0103878:	c6 05 0d d1 17 f0 8e 	movb   $0x8e,0xf017d10d
-f010387f:	c1 e8 10             	shr    $0x10,%eax
-f0103882:	66 a3 0e d1 17 f0    	mov    %ax,0xf017d10e
-	SETGATE(idt[T_ILLOP],0,GD_KT,  invalid_op, 0);
-f0103888:	b8 3e 3f 10 f0       	mov    $0xf0103f3e,%eax
-f010388d:	66 a3 10 d1 17 f0    	mov    %ax,0xf017d110
-f0103893:	66 c7 05 12 d1 17 f0 	movw   $0x8,0xf017d112
-f010389a:	08 00 
-f010389c:	c6 05 14 d1 17 f0 00 	movb   $0x0,0xf017d114
-f01038a3:	c6 05 15 d1 17 f0 8e 	movb   $0x8e,0xf017d115
-f01038aa:	c1 e8 10             	shr    $0x10,%eax
-f01038ad:	66 a3 16 d1 17 f0    	mov    %ax,0xf017d116
-	SETGATE(idt[T_DEVICE],0,GD_KT,  device_not_available, 0);
-f01038b3:	b8 48 3f 10 f0       	mov    $0xf0103f48,%eax
-f01038b8:	66 a3 18 d1 17 f0    	mov    %ax,0xf017d118
-f01038be:	66 c7 05 1a d1 17 f0 	movw   $0x8,0xf017d11a
-f01038c5:	08 00 
-f01038c7:	c6 05 1c d1 17 f0 00 	movb   $0x0,0xf017d11c
-f01038ce:	c6 05 1d d1 17 f0 8e 	movb   $0x8e,0xf017d11d
-f01038d5:	c1 e8 10             	shr    $0x10,%eax
-f01038d8:	66 a3 1e d1 17 f0    	mov    %ax,0xf017d11e
-	SETGATE(idt[T_DBLFLT],0,GD_KT,  double_fault, 0);
-f01038de:	b8 52 3f 10 f0       	mov    $0xf0103f52,%eax
-f01038e3:	66 a3 20 d1 17 f0    	mov    %ax,0xf017d120
-f01038e9:	66 c7 05 22 d1 17 f0 	movw   $0x8,0xf017d122
-f01038f0:	08 00 
-f01038f2:	c6 05 24 d1 17 f0 00 	movb   $0x0,0xf017d124
-f01038f9:	c6 05 25 d1 17 f0 8e 	movb   $0x8e,0xf017d125
-f0103900:	c1 e8 10             	shr    $0x10,%eax
-f0103903:	66 a3 26 d1 17 f0    	mov    %ax,0xf017d126
-	SETGATE(idt[T_TSS],0,GD_KT,  invalid_TSS, 0);
-f0103909:	b8 5a 3f 10 f0       	mov    $0xf0103f5a,%eax
-f010390e:	66 a3 30 d1 17 f0    	mov    %ax,0xf017d130
-f0103914:	66 c7 05 32 d1 17 f0 	movw   $0x8,0xf017d132
-f010391b:	08 00 
-f010391d:	c6 05 34 d1 17 f0 00 	movb   $0x0,0xf017d134
-f0103924:	c6 05 35 d1 17 f0 8e 	movb   $0x8e,0xf017d135
-f010392b:	c1 e8 10             	shr    $0x10,%eax
-f010392e:	66 a3 36 d1 17 f0    	mov    %ax,0xf017d136
-	SETGATE(idt[T_SEGNP],0,GD_KT,  segment_not_present, 0);
-f0103934:	b8 62 3f 10 f0       	mov    $0xf0103f62,%eax
-f0103939:	66 a3 38 d1 17 f0    	mov    %ax,0xf017d138
-f010393f:	66 c7 05 3a d1 17 f0 	movw   $0x8,0xf017d13a
-f0103946:	08 00 
-f0103948:	c6 05 3c d1 17 f0 00 	movb   $0x0,0xf017d13c
-f010394f:	c6 05 3d d1 17 f0 8e 	movb   $0x8e,0xf017d13d
-f0103956:	c1 e8 10             	shr    $0x10,%eax
-f0103959:	66 a3 3e d1 17 f0    	mov    %ax,0xf017d13e
-	SETGATE(idt[T_STACK],0,GD_KT,  stack_segment, 0);
-f010395f:	b8 6a 3f 10 f0       	mov    $0xf0103f6a,%eax
-f0103964:	66 a3 40 d1 17 f0    	mov    %ax,0xf017d140
-f010396a:	66 c7 05 42 d1 17 f0 	movw   $0x8,0xf017d142
-f0103971:	08 00 
-f0103973:	c6 05 44 d1 17 f0 00 	movb   $0x0,0xf017d144
-f010397a:	c6 05 45 d1 17 f0 8e 	movb   $0x8e,0xf017d145
-f0103981:	c1 e8 10             	shr    $0x10,%eax
-f0103984:	66 a3 46 d1 17 f0    	mov    %ax,0xf017d146
-	SETGATE(idt[T_GPFLT],0,GD_KT,  general_protection, 0);
-f010398a:	b8 72 3f 10 f0       	mov    $0xf0103f72,%eax
-f010398f:	66 a3 48 d1 17 f0    	mov    %ax,0xf017d148
-f0103995:	66 c7 05 4a d1 17 f0 	movw   $0x8,0xf017d14a
-f010399c:	08 00 
-f010399e:	c6 05 4c d1 17 f0 00 	movb   $0x0,0xf017d14c
-f01039a5:	c6 05 4d d1 17 f0 8e 	movb   $0x8e,0xf017d14d
-f01039ac:	c1 e8 10             	shr    $0x10,%eax
-f01039af:	66 a3 4e d1 17 f0    	mov    %ax,0xf017d14e
-	SETGATE(idt[T_PGFLT],0,GD_KT,  page_fault, 0);
-f01039b5:	b8 7a 3f 10 f0       	mov    $0xf0103f7a,%eax
-f01039ba:	66 a3 50 d1 17 f0    	mov    %ax,0xf017d150
-f01039c0:	66 c7 05 52 d1 17 f0 	movw   $0x8,0xf017d152
-f01039c7:	08 00 
-f01039c9:	c6 05 54 d1 17 f0 00 	movb   $0x0,0xf017d154
-f01039d0:	c6 05 55 d1 17 f0 8e 	movb   $0x8e,0xf017d155
-f01039d7:	c1 e8 10             	shr    $0x10,%eax
-f01039da:	66 a3 56 d1 17 f0    	mov    %ax,0xf017d156
-	SETGATE(idt[T_FPERR],0,GD_KT,  float_point_error, 0);
-f01039e0:	b8 82 3f 10 f0       	mov    $0xf0103f82,%eax
-f01039e5:	66 a3 60 d1 17 f0    	mov    %ax,0xf017d160
-f01039eb:	66 c7 05 62 d1 17 f0 	movw   $0x8,0xf017d162
-f01039f2:	08 00 
-f01039f4:	c6 05 64 d1 17 f0 00 	movb   $0x0,0xf017d164
-f01039fb:	c6 05 65 d1 17 f0 8e 	movb   $0x8e,0xf017d165
-f0103a02:	c1 e8 10             	shr    $0x10,%eax
-f0103a05:	66 a3 66 d1 17 f0    	mov    %ax,0xf017d166
-	SETGATE(idt[T_ALIGN],0,GD_KT,  alignment_check, 0);
-f0103a0b:	b8 8c 3f 10 f0       	mov    $0xf0103f8c,%eax
-f0103a10:	66 a3 68 d1 17 f0    	mov    %ax,0xf017d168
-f0103a16:	66 c7 05 6a d1 17 f0 	movw   $0x8,0xf017d16a
-f0103a1d:	08 00 
-f0103a1f:	c6 05 6c d1 17 f0 00 	movb   $0x0,0xf017d16c
-f0103a26:	c6 05 6d d1 17 f0 8e 	movb   $0x8e,0xf017d16d
-f0103a2d:	c1 e8 10             	shr    $0x10,%eax
-f0103a30:	66 a3 6e d1 17 f0    	mov    %ax,0xf017d16e
-	SETGATE(idt[T_MCHK],0,GD_KT,  machine_check, 0);
-f0103a36:	b8 94 3f 10 f0       	mov    $0xf0103f94,%eax
-f0103a3b:	66 a3 70 d1 17 f0    	mov    %ax,0xf017d170
-f0103a41:	66 c7 05 72 d1 17 f0 	movw   $0x8,0xf017d172
-f0103a48:	08 00 
-f0103a4a:	c6 05 74 d1 17 f0 00 	movb   $0x0,0xf017d174
-f0103a51:	c6 05 75 d1 17 f0 8e 	movb   $0x8e,0xf017d175
-f0103a58:	c1 e8 10             	shr    $0x10,%eax
-f0103a5b:	66 a3 76 d1 17 f0    	mov    %ax,0xf017d176
-	SETGATE(idt[T_SIMDERR],0,GD_KT,  SIMD_float_point_error, 0);
-f0103a61:	b8 9e 3f 10 f0       	mov    $0xf0103f9e,%eax
-f0103a66:	66 a3 78 d1 17 f0    	mov    %ax,0xf017d178
-f0103a6c:	66 c7 05 7a d1 17 f0 	movw   $0x8,0xf017d17a
-f0103a73:	08 00 
-f0103a75:	c6 05 7c d1 17 f0 00 	movb   $0x0,0xf017d17c
-f0103a7c:	c6 05 7d d1 17 f0 8e 	movb   $0x8e,0xf017d17d
-f0103a83:	c1 e8 10             	shr    $0x10,%eax
-f0103a86:	66 a3 7e d1 17 f0    	mov    %ax,0xf017d17e
-	SETGATE(idt[T_SYSCALL],0,GD_KT,  system_call,3);
-f0103a8c:	b8 a8 3f 10 f0       	mov    $0xf0103fa8,%eax
-f0103a91:	66 a3 60 d2 17 f0    	mov    %ax,0xf017d260
-f0103a97:	66 c7 05 62 d2 17 f0 	movw   $0x8,0xf017d262
-f0103a9e:	08 00 
-f0103aa0:	c6 05 64 d2 17 f0 00 	movb   $0x0,0xf017d264
-f0103aa7:	c6 05 65 d2 17 f0 ee 	movb   $0xee,0xf017d265
-f0103aae:	c1 e8 10             	shr    $0x10,%eax
-f0103ab1:	66 a3 66 d2 17 f0    	mov    %ax,0xf017d266
+	SETGATE(idt[T_DIVIDE],0,GD_KT,  divide_error1, 0);
+f0103780:	b8 04 3f 10 f0       	mov    $0xf0103f04,%eax
+f0103785:	66 a3 e0 d0 17 f0    	mov    %ax,0xf017d0e0
+f010378b:	66 c7 05 e2 d0 17 f0 	movw   $0x8,0xf017d0e2
+f0103792:	08 00 
+f0103794:	c6 05 e4 d0 17 f0 00 	movb   $0x0,0xf017d0e4
+f010379b:	c6 05 e5 d0 17 f0 8e 	movb   $0x8e,0xf017d0e5
+f01037a2:	c1 e8 10             	shr    $0x10,%eax
+f01037a5:	66 a3 e6 d0 17 f0    	mov    %ax,0xf017d0e6
+	SETGATE(idt[T_DEBUG],0,GD_KT,  debug1, 0);
+f01037ab:	b8 0e 3f 10 f0       	mov    $0xf0103f0e,%eax
+f01037b0:	66 a3 e8 d0 17 f0    	mov    %ax,0xf017d0e8
+f01037b6:	66 c7 05 ea d0 17 f0 	movw   $0x8,0xf017d0ea
+f01037bd:	08 00 
+f01037bf:	c6 05 ec d0 17 f0 00 	movb   $0x0,0xf017d0ec
+f01037c6:	c6 05 ed d0 17 f0 8e 	movb   $0x8e,0xf017d0ed
+f01037cd:	c1 e8 10             	shr    $0x10,%eax
+f01037d0:	66 a3 ee d0 17 f0    	mov    %ax,0xf017d0ee
+	SETGATE(idt[T_NMI],0,GD_KT,  nmi1, 0);
+f01037d6:	b8 18 3f 10 f0       	mov    $0xf0103f18,%eax
+f01037db:	66 a3 f0 d0 17 f0    	mov    %ax,0xf017d0f0
+f01037e1:	66 c7 05 f2 d0 17 f0 	movw   $0x8,0xf017d0f2
+f01037e8:	08 00 
+f01037ea:	c6 05 f4 d0 17 f0 00 	movb   $0x0,0xf017d0f4
+f01037f1:	c6 05 f5 d0 17 f0 8e 	movb   $0x8e,0xf017d0f5
+f01037f8:	c1 e8 10             	shr    $0x10,%eax
+f01037fb:	66 a3 f6 d0 17 f0    	mov    %ax,0xf017d0f6
+   	SETGATE(idt[T_BRKPT],0,GD_KT,  breakpoint1,3);
+f0103801:	b8 22 3f 10 f0       	mov    $0xf0103f22,%eax
+f0103806:	66 a3 f8 d0 17 f0    	mov    %ax,0xf017d0f8
+f010380c:	66 c7 05 fa d0 17 f0 	movw   $0x8,0xf017d0fa
+f0103813:	08 00 
+f0103815:	c6 05 fc d0 17 f0 00 	movb   $0x0,0xf017d0fc
+f010381c:	c6 05 fd d0 17 f0 ee 	movb   $0xee,0xf017d0fd
+f0103823:	c1 e8 10             	shr    $0x10,%eax
+f0103826:	66 a3 fe d0 17 f0    	mov    %ax,0xf017d0fe
+	SETGATE(idt[T_OFLOW],0,GD_KT,  overflow1, 0);
+f010382c:	b8 2c 3f 10 f0       	mov    $0xf0103f2c,%eax
+f0103831:	66 a3 00 d1 17 f0    	mov    %ax,0xf017d100
+f0103837:	66 c7 05 02 d1 17 f0 	movw   $0x8,0xf017d102
+f010383e:	08 00 
+f0103840:	c6 05 04 d1 17 f0 00 	movb   $0x0,0xf017d104
+f0103847:	c6 05 05 d1 17 f0 8e 	movb   $0x8e,0xf017d105
+f010384e:	c1 e8 10             	shr    $0x10,%eax
+f0103851:	66 a3 06 d1 17 f0    	mov    %ax,0xf017d106
+	SETGATE(idt[T_BOUND],0,GD_KT,  bounds1, 0);
+f0103857:	b8 36 3f 10 f0       	mov    $0xf0103f36,%eax
+f010385c:	66 a3 08 d1 17 f0    	mov    %ax,0xf017d108
+f0103862:	66 c7 05 0a d1 17 f0 	movw   $0x8,0xf017d10a
+f0103869:	08 00 
+f010386b:	c6 05 0c d1 17 f0 00 	movb   $0x0,0xf017d10c
+f0103872:	c6 05 0d d1 17 f0 8e 	movb   $0x8e,0xf017d10d
+f0103879:	c1 e8 10             	shr    $0x10,%eax
+f010387c:	66 a3 0e d1 17 f0    	mov    %ax,0xf017d10e
+	SETGATE(idt[T_ILLOP],0,GD_KT,  invalid_op1, 0);
+f0103882:	b8 40 3f 10 f0       	mov    $0xf0103f40,%eax
+f0103887:	66 a3 10 d1 17 f0    	mov    %ax,0xf017d110
+f010388d:	66 c7 05 12 d1 17 f0 	movw   $0x8,0xf017d112
+f0103894:	08 00 
+f0103896:	c6 05 14 d1 17 f0 00 	movb   $0x0,0xf017d114
+f010389d:	c6 05 15 d1 17 f0 8e 	movb   $0x8e,0xf017d115
+f01038a4:	c1 e8 10             	shr    $0x10,%eax
+f01038a7:	66 a3 16 d1 17 f0    	mov    %ax,0xf017d116
+	SETGATE(idt[T_DEVICE],0,GD_KT,  device_not_available1, 0);
+f01038ad:	b8 4a 3f 10 f0       	mov    $0xf0103f4a,%eax
+f01038b2:	66 a3 18 d1 17 f0    	mov    %ax,0xf017d118
+f01038b8:	66 c7 05 1a d1 17 f0 	movw   $0x8,0xf017d11a
+f01038bf:	08 00 
+f01038c1:	c6 05 1c d1 17 f0 00 	movb   $0x0,0xf017d11c
+f01038c8:	c6 05 1d d1 17 f0 8e 	movb   $0x8e,0xf017d11d
+f01038cf:	c1 e8 10             	shr    $0x10,%eax
+f01038d2:	66 a3 1e d1 17 f0    	mov    %ax,0xf017d11e
+	SETGATE(idt[T_DBLFLT],0,GD_KT,  double_fault1, 0);
+f01038d8:	b8 54 3f 10 f0       	mov    $0xf0103f54,%eax
+f01038dd:	66 a3 20 d1 17 f0    	mov    %ax,0xf017d120
+f01038e3:	66 c7 05 22 d1 17 f0 	movw   $0x8,0xf017d122
+f01038ea:	08 00 
+f01038ec:	c6 05 24 d1 17 f0 00 	movb   $0x0,0xf017d124
+f01038f3:	c6 05 25 d1 17 f0 8e 	movb   $0x8e,0xf017d125
+f01038fa:	c1 e8 10             	shr    $0x10,%eax
+f01038fd:	66 a3 26 d1 17 f0    	mov    %ax,0xf017d126
+	SETGATE(idt[T_TSS],0,GD_KT,  invalid_TSS1, 0);
+f0103903:	b8 5c 3f 10 f0       	mov    $0xf0103f5c,%eax
+f0103908:	66 a3 30 d1 17 f0    	mov    %ax,0xf017d130
+f010390e:	66 c7 05 32 d1 17 f0 	movw   $0x8,0xf017d132
+f0103915:	08 00 
+f0103917:	c6 05 34 d1 17 f0 00 	movb   $0x0,0xf017d134
+f010391e:	c6 05 35 d1 17 f0 8e 	movb   $0x8e,0xf017d135
+f0103925:	c1 e8 10             	shr    $0x10,%eax
+f0103928:	66 a3 36 d1 17 f0    	mov    %ax,0xf017d136
+	SETGATE(idt[T_SEGNP],0,GD_KT,  segment_not_present1, 0);
+f010392e:	b8 64 3f 10 f0       	mov    $0xf0103f64,%eax
+f0103933:	66 a3 38 d1 17 f0    	mov    %ax,0xf017d138
+f0103939:	66 c7 05 3a d1 17 f0 	movw   $0x8,0xf017d13a
+f0103940:	08 00 
+f0103942:	c6 05 3c d1 17 f0 00 	movb   $0x0,0xf017d13c
+f0103949:	c6 05 3d d1 17 f0 8e 	movb   $0x8e,0xf017d13d
+f0103950:	c1 e8 10             	shr    $0x10,%eax
+f0103953:	66 a3 3e d1 17 f0    	mov    %ax,0xf017d13e
+	SETGATE(idt[T_STACK],0,GD_KT,  stack_segment1, 0);
+f0103959:	b8 6c 3f 10 f0       	mov    $0xf0103f6c,%eax
+f010395e:	66 a3 40 d1 17 f0    	mov    %ax,0xf017d140
+f0103964:	66 c7 05 42 d1 17 f0 	movw   $0x8,0xf017d142
+f010396b:	08 00 
+f010396d:	c6 05 44 d1 17 f0 00 	movb   $0x0,0xf017d144
+f0103974:	c6 05 45 d1 17 f0 8e 	movb   $0x8e,0xf017d145
+f010397b:	c1 e8 10             	shr    $0x10,%eax
+f010397e:	66 a3 46 d1 17 f0    	mov    %ax,0xf017d146
+	SETGATE(idt[T_GPFLT],0,GD_KT,  general_protection1, 0);
+f0103984:	b8 74 3f 10 f0       	mov    $0xf0103f74,%eax
+f0103989:	66 a3 48 d1 17 f0    	mov    %ax,0xf017d148
+f010398f:	66 c7 05 4a d1 17 f0 	movw   $0x8,0xf017d14a
+f0103996:	08 00 
+f0103998:	c6 05 4c d1 17 f0 00 	movb   $0x0,0xf017d14c
+f010399f:	c6 05 4d d1 17 f0 8e 	movb   $0x8e,0xf017d14d
+f01039a6:	c1 e8 10             	shr    $0x10,%eax
+f01039a9:	66 a3 4e d1 17 f0    	mov    %ax,0xf017d14e
+	SETGATE(idt[T_PGFLT],0,GD_KT,  page_fault1, 0);
+f01039af:	b8 7c 3f 10 f0       	mov    $0xf0103f7c,%eax
+f01039b4:	66 a3 50 d1 17 f0    	mov    %ax,0xf017d150
+f01039ba:	66 c7 05 52 d1 17 f0 	movw   $0x8,0xf017d152
+f01039c1:	08 00 
+f01039c3:	c6 05 54 d1 17 f0 00 	movb   $0x0,0xf017d154
+f01039ca:	c6 05 55 d1 17 f0 8e 	movb   $0x8e,0xf017d155
+f01039d1:	c1 e8 10             	shr    $0x10,%eax
+f01039d4:	66 a3 56 d1 17 f0    	mov    %ax,0xf017d156
+	SETGATE(idt[T_FPERR],0,GD_KT,  float_point_error1, 0);
+f01039da:	b8 84 3f 10 f0       	mov    $0xf0103f84,%eax
+f01039df:	66 a3 60 d1 17 f0    	mov    %ax,0xf017d160
+f01039e5:	66 c7 05 62 d1 17 f0 	movw   $0x8,0xf017d162
+f01039ec:	08 00 
+f01039ee:	c6 05 64 d1 17 f0 00 	movb   $0x0,0xf017d164
+f01039f5:	c6 05 65 d1 17 f0 8e 	movb   $0x8e,0xf017d165
+f01039fc:	c1 e8 10             	shr    $0x10,%eax
+f01039ff:	66 a3 66 d1 17 f0    	mov    %ax,0xf017d166
+	SETGATE(idt[T_ALIGN],0,GD_KT,  alignment_check1, 0);
+f0103a05:	b8 8e 3f 10 f0       	mov    $0xf0103f8e,%eax
+f0103a0a:	66 a3 68 d1 17 f0    	mov    %ax,0xf017d168
+f0103a10:	66 c7 05 6a d1 17 f0 	movw   $0x8,0xf017d16a
+f0103a17:	08 00 
+f0103a19:	c6 05 6c d1 17 f0 00 	movb   $0x0,0xf017d16c
+f0103a20:	c6 05 6d d1 17 f0 8e 	movb   $0x8e,0xf017d16d
+f0103a27:	c1 e8 10             	shr    $0x10,%eax
+f0103a2a:	66 a3 6e d1 17 f0    	mov    %ax,0xf017d16e
+	SETGATE(idt[T_MCHK],0,GD_KT,  machine_check1, 0);
+f0103a30:	b8 96 3f 10 f0       	mov    $0xf0103f96,%eax
+f0103a35:	66 a3 70 d1 17 f0    	mov    %ax,0xf017d170
+f0103a3b:	66 c7 05 72 d1 17 f0 	movw   $0x8,0xf017d172
+f0103a42:	08 00 
+f0103a44:	c6 05 74 d1 17 f0 00 	movb   $0x0,0xf017d174
+f0103a4b:	c6 05 75 d1 17 f0 8e 	movb   $0x8e,0xf017d175
+f0103a52:	c1 e8 10             	shr    $0x10,%eax
+f0103a55:	66 a3 76 d1 17 f0    	mov    %ax,0xf017d176
+	SETGATE(idt[T_SIMDERR],0,GD_KT,  SIMD_float_point_error1, 0);
+f0103a5b:	b8 a0 3f 10 f0       	mov    $0xf0103fa0,%eax
+f0103a60:	66 a3 78 d1 17 f0    	mov    %ax,0xf017d178
+f0103a66:	66 c7 05 7a d1 17 f0 	movw   $0x8,0xf017d17a
+f0103a6d:	08 00 
+f0103a6f:	c6 05 7c d1 17 f0 00 	movb   $0x0,0xf017d17c
+f0103a76:	c6 05 7d d1 17 f0 8e 	movb   $0x8e,0xf017d17d
+f0103a7d:	c1 e8 10             	shr    $0x10,%eax
+f0103a80:	66 a3 7e d1 17 f0    	mov    %ax,0xf017d17e
+	SETGATE(idt[T_SYSCALL],0,GD_KT,  system_call1,3);
+f0103a86:	b8 aa 3f 10 f0       	mov    $0xf0103faa,%eax
+f0103a8b:	66 a3 60 d2 17 f0    	mov    %ax,0xf017d260
+f0103a91:	66 c7 05 62 d2 17 f0 	movw   $0x8,0xf017d262
+f0103a98:	08 00 
+f0103a9a:	c6 05 64 d2 17 f0 00 	movb   $0x0,0xf017d264
+f0103aa1:	c6 05 65 d2 17 f0 ee 	movb   $0xee,0xf017d265
+f0103aa8:	c1 e8 10             	shr    $0x10,%eax
+f0103aab:	66 a3 66 d2 17 f0    	mov    %ax,0xf017d266
 
 
 
 
 	ts.ts_esp0 = KSTACKTOP;
-f0103ab7:	c7 05 04 d9 17 f0 00 	movl   $0xf0000000,0xf017d904
-f0103abe:	00 00 f0 
+f0103ab1:	c7 05 04 d9 17 f0 00 	movl   $0xf0000000,0xf017d904
+f0103ab8:	00 00 f0 
 	ts.ts_ss0 =GD_KD;
-f0103ac1:	66 c7 05 08 d9 17 f0 	movw   $0x10,0xf017d908
-f0103ac8:	10 00 
+f0103abb:	66 c7 05 08 d9 17 f0 	movw   $0x10,0xf017d908
+f0103ac2:	10 00 
 	gdt[GD_TSS0 >> 3] = SEG16(STS_T32A, (uint32_t) (&ts),
-f0103aca:	66 c7 05 48 b3 11 f0 	movw   $0x67,0xf011b348
-f0103ad1:	67 00 
-f0103ad3:	b8 00 d9 17 f0       	mov    $0xf017d900,%eax
-f0103ad8:	66 a3 4a b3 11 f0    	mov    %ax,0xf011b34a
-f0103ade:	89 c2                	mov    %eax,%edx
-f0103ae0:	c1 ea 10             	shr    $0x10,%edx
-f0103ae3:	88 15 4c b3 11 f0    	mov    %dl,0xf011b34c
-f0103ae9:	c6 05 4e b3 11 f0 40 	movb   $0x40,0xf011b34e
-f0103af0:	c1 e8 18             	shr    $0x18,%eax
-f0103af3:	a2 4f b3 11 f0       	mov    %al,0xf011b34f
+f0103ac4:	66 c7 05 48 b3 11 f0 	movw   $0x67,0xf011b348
+f0103acb:	67 00 
+f0103acd:	b8 00 d9 17 f0       	mov    $0xf017d900,%eax
+f0103ad2:	66 a3 4a b3 11 f0    	mov    %ax,0xf011b34a
+f0103ad8:	89 c2                	mov    %eax,%edx
+f0103ada:	c1 ea 10             	shr    $0x10,%edx
+f0103add:	88 15 4c b3 11 f0    	mov    %dl,0xf011b34c
+f0103ae3:	c6 05 4e b3 11 f0 40 	movb   $0x40,0xf011b34e
+f0103aea:	c1 e8 18             	shr    $0x18,%eax
+f0103aed:	a2 4f b3 11 f0       	mov    %al,0xf011b34f
 					sizeof(struct Taskstate) - 1, 0);
 
 	gdt[GD_TSS0 >> 3].sd_s = 0;
-f0103af8:	c6 05 4d b3 11 f0 89 	movb   $0x89,0xf011b34d
+f0103af2:	c6 05 4d b3 11 f0 89 	movb   $0x89,0xf011b34d
 }
 
 static __inline void
 ltr(uint16_t sel)
 {
 	__asm __volatile("ltr %0" : : "r" (sel));
-f0103aff:	b8 28 00 00 00       	mov    $0x28,%eax
-f0103b04:	0f 00 d8             	ltr    %ax
+f0103af9:	b8 28 00 00 00       	mov    $0x28,%eax
+f0103afe:	0f 00 d8             	ltr    %ax
 	ltr(GD_TSS0);
 
 	// Per-CPU setup 
 	trap_init_percpu();
-f0103b07:	e8 1a fc ff ff       	call   f0103726 <trap_init_percpu>
+f0103b01:	e8 1a fc ff ff       	call   f0103720 <trap_init_percpu>
 }
-f0103b0c:	5d                   	pop    %ebp
-f0103b0d:	c3                   	ret    
+f0103b06:	5d                   	pop    %ebp
+f0103b07:	c3                   	ret    
 
-f0103b0e <print_regs>:
+f0103b08 <print_regs>:
 	}
 }
 
 void
 print_regs(struct PushRegs *regs)
 {
-f0103b0e:	55                   	push   %ebp
-f0103b0f:	89 e5                	mov    %esp,%ebp
-f0103b11:	53                   	push   %ebx
-f0103b12:	83 ec 14             	sub    $0x14,%esp
-f0103b15:	8b 5d 08             	mov    0x8(%ebp),%ebx
+f0103b08:	55                   	push   %ebp
+f0103b09:	89 e5                	mov    %esp,%ebp
+f0103b0b:	53                   	push   %ebx
+f0103b0c:	83 ec 14             	sub    $0x14,%esp
+f0103b0f:	8b 5d 08             	mov    0x8(%ebp),%ebx
 	cprintf("  edi  0x%08x\n", regs->reg_edi);
-f0103b18:	8b 03                	mov    (%ebx),%eax
-f0103b1a:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103b1e:	c7 04 24 02 61 10 f0 	movl   $0xf0106102,(%esp)
-f0103b25:	e8 da fb ff ff       	call   f0103704 <cprintf>
+f0103b12:	8b 03                	mov    (%ebx),%eax
+f0103b14:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103b18:	c7 04 24 02 61 10 f0 	movl   $0xf0106102,(%esp)
+f0103b1f:	e8 e0 fb ff ff       	call   f0103704 <cprintf>
 	cprintf("  esi  0x%08x\n", regs->reg_esi);
-f0103b2a:	8b 43 04             	mov    0x4(%ebx),%eax
-f0103b2d:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103b31:	c7 04 24 11 61 10 f0 	movl   $0xf0106111,(%esp)
-f0103b38:	e8 c7 fb ff ff       	call   f0103704 <cprintf>
+f0103b24:	8b 43 04             	mov    0x4(%ebx),%eax
+f0103b27:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103b2b:	c7 04 24 11 61 10 f0 	movl   $0xf0106111,(%esp)
+f0103b32:	e8 cd fb ff ff       	call   f0103704 <cprintf>
 	cprintf("  ebp  0x%08x\n", regs->reg_ebp);
-f0103b3d:	8b 43 08             	mov    0x8(%ebx),%eax
-f0103b40:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103b44:	c7 04 24 20 61 10 f0 	movl   $0xf0106120,(%esp)
-f0103b4b:	e8 b4 fb ff ff       	call   f0103704 <cprintf>
+f0103b37:	8b 43 08             	mov    0x8(%ebx),%eax
+f0103b3a:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103b3e:	c7 04 24 20 61 10 f0 	movl   $0xf0106120,(%esp)
+f0103b45:	e8 ba fb ff ff       	call   f0103704 <cprintf>
 	cprintf("  oesp 0x%08x\n", regs->reg_oesp);
-f0103b50:	8b 43 0c             	mov    0xc(%ebx),%eax
-f0103b53:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103b57:	c7 04 24 2f 61 10 f0 	movl   $0xf010612f,(%esp)
-f0103b5e:	e8 a1 fb ff ff       	call   f0103704 <cprintf>
+f0103b4a:	8b 43 0c             	mov    0xc(%ebx),%eax
+f0103b4d:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103b51:	c7 04 24 2f 61 10 f0 	movl   $0xf010612f,(%esp)
+f0103b58:	e8 a7 fb ff ff       	call   f0103704 <cprintf>
 	cprintf("  ebx  0x%08x\n", regs->reg_ebx);
-f0103b63:	8b 43 10             	mov    0x10(%ebx),%eax
-f0103b66:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103b6a:	c7 04 24 3e 61 10 f0 	movl   $0xf010613e,(%esp)
-f0103b71:	e8 8e fb ff ff       	call   f0103704 <cprintf>
+f0103b5d:	8b 43 10             	mov    0x10(%ebx),%eax
+f0103b60:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103b64:	c7 04 24 3e 61 10 f0 	movl   $0xf010613e,(%esp)
+f0103b6b:	e8 94 fb ff ff       	call   f0103704 <cprintf>
 	cprintf("  edx  0x%08x\n", regs->reg_edx);
-f0103b76:	8b 43 14             	mov    0x14(%ebx),%eax
-f0103b79:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103b7d:	c7 04 24 4d 61 10 f0 	movl   $0xf010614d,(%esp)
-f0103b84:	e8 7b fb ff ff       	call   f0103704 <cprintf>
+f0103b70:	8b 43 14             	mov    0x14(%ebx),%eax
+f0103b73:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103b77:	c7 04 24 4d 61 10 f0 	movl   $0xf010614d,(%esp)
+f0103b7e:	e8 81 fb ff ff       	call   f0103704 <cprintf>
 	cprintf("  ecx  0x%08x\n", regs->reg_ecx);
-f0103b89:	8b 43 18             	mov    0x18(%ebx),%eax
-f0103b8c:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103b90:	c7 04 24 5c 61 10 f0 	movl   $0xf010615c,(%esp)
-f0103b97:	e8 68 fb ff ff       	call   f0103704 <cprintf>
+f0103b83:	8b 43 18             	mov    0x18(%ebx),%eax
+f0103b86:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103b8a:	c7 04 24 5c 61 10 f0 	movl   $0xf010615c,(%esp)
+f0103b91:	e8 6e fb ff ff       	call   f0103704 <cprintf>
 	cprintf("  eax  0x%08x\n", regs->reg_eax);
-f0103b9c:	8b 43 1c             	mov    0x1c(%ebx),%eax
-f0103b9f:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103ba3:	c7 04 24 6b 61 10 f0 	movl   $0xf010616b,(%esp)
-f0103baa:	e8 55 fb ff ff       	call   f0103704 <cprintf>
+f0103b96:	8b 43 1c             	mov    0x1c(%ebx),%eax
+f0103b99:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103b9d:	c7 04 24 6b 61 10 f0 	movl   $0xf010616b,(%esp)
+f0103ba4:	e8 5b fb ff ff       	call   f0103704 <cprintf>
 }
-f0103baf:	83 c4 14             	add    $0x14,%esp
-f0103bb2:	5b                   	pop    %ebx
-f0103bb3:	5d                   	pop    %ebp
-f0103bb4:	c3                   	ret    
+f0103ba9:	83 c4 14             	add    $0x14,%esp
+f0103bac:	5b                   	pop    %ebx
+f0103bad:	5d                   	pop    %ebp
+f0103bae:	c3                   	ret    
 
-f0103bb5 <print_trapframe>:
+f0103baf <print_trapframe>:
 	lidt(&idt_pd);
 }
 
 void
 print_trapframe(struct Trapframe *tf)
 {
-f0103bb5:	55                   	push   %ebp
-f0103bb6:	89 e5                	mov    %esp,%ebp
-f0103bb8:	56                   	push   %esi
-f0103bb9:	53                   	push   %ebx
-f0103bba:	83 ec 10             	sub    $0x10,%esp
-f0103bbd:	8b 5d 08             	mov    0x8(%ebp),%ebx
+f0103baf:	55                   	push   %ebp
+f0103bb0:	89 e5                	mov    %esp,%ebp
+f0103bb2:	56                   	push   %esi
+f0103bb3:	53                   	push   %ebx
+f0103bb4:	83 ec 10             	sub    $0x10,%esp
+f0103bb7:	8b 5d 08             	mov    0x8(%ebp),%ebx
 	cprintf("TRAP frame at %p\n", tf);
-f0103bc0:	89 5c 24 04          	mov    %ebx,0x4(%esp)
-f0103bc4:	c7 04 24 a1 62 10 f0 	movl   $0xf01062a1,(%esp)
-f0103bcb:	e8 34 fb ff ff       	call   f0103704 <cprintf>
+f0103bba:	89 5c 24 04          	mov    %ebx,0x4(%esp)
+f0103bbe:	c7 04 24 a1 62 10 f0 	movl   $0xf01062a1,(%esp)
+f0103bc5:	e8 3a fb ff ff       	call   f0103704 <cprintf>
 	print_regs(&tf->tf_regs);
-f0103bd0:	89 1c 24             	mov    %ebx,(%esp)
-f0103bd3:	e8 36 ff ff ff       	call   f0103b0e <print_regs>
+f0103bca:	89 1c 24             	mov    %ebx,(%esp)
+f0103bcd:	e8 36 ff ff ff       	call   f0103b08 <print_regs>
 	cprintf("  es   0x----%04x\n", tf->tf_es);
-f0103bd8:	0f b7 43 20          	movzwl 0x20(%ebx),%eax
-f0103bdc:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103be0:	c7 04 24 bc 61 10 f0 	movl   $0xf01061bc,(%esp)
-f0103be7:	e8 18 fb ff ff       	call   f0103704 <cprintf>
+f0103bd2:	0f b7 43 20          	movzwl 0x20(%ebx),%eax
+f0103bd6:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103bda:	c7 04 24 bc 61 10 f0 	movl   $0xf01061bc,(%esp)
+f0103be1:	e8 1e fb ff ff       	call   f0103704 <cprintf>
 	cprintf("  ds   0x----%04x\n", tf->tf_ds);
-f0103bec:	0f b7 43 24          	movzwl 0x24(%ebx),%eax
-f0103bf0:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103bf4:	c7 04 24 cf 61 10 f0 	movl   $0xf01061cf,(%esp)
-f0103bfb:	e8 04 fb ff ff       	call   f0103704 <cprintf>
+f0103be6:	0f b7 43 24          	movzwl 0x24(%ebx),%eax
+f0103bea:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103bee:	c7 04 24 cf 61 10 f0 	movl   $0xf01061cf,(%esp)
+f0103bf5:	e8 0a fb ff ff       	call   f0103704 <cprintf>
 	cprintf("  trap 0x%08x %s\n", tf->tf_trapno, trapname(tf->tf_trapno));
-f0103c00:	8b 43 28             	mov    0x28(%ebx),%eax
+f0103bfa:	8b 43 28             	mov    0x28(%ebx),%eax
 		"Alignment Check",
 		"Machine-Check",
 		"SIMD Floating-Point Exception"
 	};
 
 	if (trapno < sizeof(excnames)/sizeof(excnames[0]))
-f0103c03:	83 f8 13             	cmp    $0x13,%eax
-f0103c06:	77 09                	ja     f0103c11 <print_trapframe+0x5c>
+f0103bfd:	83 f8 13             	cmp    $0x13,%eax
+f0103c00:	77 09                	ja     f0103c0b <print_trapframe+0x5c>
 		return excnames[trapno];
-f0103c08:	8b 14 85 a0 64 10 f0 	mov    -0xfef9b60(,%eax,4),%edx
-f0103c0f:	eb 10                	jmp    f0103c21 <print_trapframe+0x6c>
+f0103c02:	8b 14 85 a0 64 10 f0 	mov    -0xfef9b60(,%eax,4),%edx
+f0103c09:	eb 10                	jmp    f0103c1b <print_trapframe+0x6c>
 	if (trapno == T_SYSCALL)
 		return "System call";
-f0103c11:	83 f8 30             	cmp    $0x30,%eax
-f0103c14:	ba 7a 61 10 f0       	mov    $0xf010617a,%edx
-f0103c19:	b9 86 61 10 f0       	mov    $0xf0106186,%ecx
-f0103c1e:	0f 45 d1             	cmovne %ecx,%edx
+f0103c0b:	83 f8 30             	cmp    $0x30,%eax
+f0103c0e:	ba 7a 61 10 f0       	mov    $0xf010617a,%edx
+f0103c13:	b9 86 61 10 f0       	mov    $0xf0106186,%ecx
+f0103c18:	0f 45 d1             	cmovne %ecx,%edx
 {
 	cprintf("TRAP frame at %p\n", tf);
 	print_regs(&tf->tf_regs);
 	cprintf("  es   0x----%04x\n", tf->tf_es);
 	cprintf("  ds   0x----%04x\n", tf->tf_ds);
 	cprintf("  trap 0x%08x %s\n", tf->tf_trapno, trapname(tf->tf_trapno));
-f0103c21:	89 54 24 08          	mov    %edx,0x8(%esp)
-f0103c25:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103c29:	c7 04 24 e2 61 10 f0 	movl   $0xf01061e2,(%esp)
-f0103c30:	e8 cf fa ff ff       	call   f0103704 <cprintf>
+f0103c1b:	89 54 24 08          	mov    %edx,0x8(%esp)
+f0103c1f:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103c23:	c7 04 24 e2 61 10 f0 	movl   $0xf01061e2,(%esp)
+f0103c2a:	e8 d5 fa ff ff       	call   f0103704 <cprintf>
 	// If this trap was a page fault that just happened
 	// (so %cr2 is meaningful), print the faulting linear address.
 	if (tf == last_tf && tf->tf_trapno == T_PGFLT)
-f0103c35:	3b 1d e0 d8 17 f0    	cmp    0xf017d8e0,%ebx
-f0103c3b:	75 19                	jne    f0103c56 <print_trapframe+0xa1>
-f0103c3d:	83 7b 28 0e          	cmpl   $0xe,0x28(%ebx)
-f0103c41:	75 13                	jne    f0103c56 <print_trapframe+0xa1>
+f0103c2f:	3b 1d e0 d8 17 f0    	cmp    0xf017d8e0,%ebx
+f0103c35:	75 19                	jne    f0103c50 <print_trapframe+0xa1>
+f0103c37:	83 7b 28 0e          	cmpl   $0xe,0x28(%ebx)
+f0103c3b:	75 13                	jne    f0103c50 <print_trapframe+0xa1>
 
 static __inline uint32_t
 rcr2(void)
 {
 	uint32_t val;
 	__asm __volatile("movl %%cr2,%0" : "=r" (val));
-f0103c43:	0f 20 d0             	mov    %cr2,%eax
+f0103c3d:	0f 20 d0             	mov    %cr2,%eax
 		cprintf("  cr2  0x%08x\n", rcr2());
-f0103c46:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103c4a:	c7 04 24 f4 61 10 f0 	movl   $0xf01061f4,(%esp)
-f0103c51:	e8 ae fa ff ff       	call   f0103704 <cprintf>
+f0103c40:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103c44:	c7 04 24 f4 61 10 f0 	movl   $0xf01061f4,(%esp)
+f0103c4b:	e8 b4 fa ff ff       	call   f0103704 <cprintf>
 	cprintf("  err  0x%08x", tf->tf_err);
-f0103c56:	8b 43 2c             	mov    0x2c(%ebx),%eax
-f0103c59:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103c5d:	c7 04 24 03 62 10 f0 	movl   $0xf0106203,(%esp)
-f0103c64:	e8 9b fa ff ff       	call   f0103704 <cprintf>
+f0103c50:	8b 43 2c             	mov    0x2c(%ebx),%eax
+f0103c53:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103c57:	c7 04 24 03 62 10 f0 	movl   $0xf0106203,(%esp)
+f0103c5e:	e8 a1 fa ff ff       	call   f0103704 <cprintf>
 	// For page faults, print decoded fault error code:
 	// U/K=fault occurred in user/kernel mode
 	// W/R=a write/read caused the fault
 	// PR=a protection violation caused the fault (NP=page not present).
 	if (tf->tf_trapno == T_PGFLT)
-f0103c69:	83 7b 28 0e          	cmpl   $0xe,0x28(%ebx)
-f0103c6d:	75 51                	jne    f0103cc0 <print_trapframe+0x10b>
+f0103c63:	83 7b 28 0e          	cmpl   $0xe,0x28(%ebx)
+f0103c67:	75 51                	jne    f0103cba <print_trapframe+0x10b>
 		cprintf(" [%s, %s, %s]\n",
 			tf->tf_err & 4 ? "user" : "kernel",
 			tf->tf_err & 2 ? "write" : "read",
 			tf->tf_err & 1 ? "protection" : "not-present");
-f0103c6f:	8b 43 2c             	mov    0x2c(%ebx),%eax
+f0103c69:	8b 43 2c             	mov    0x2c(%ebx),%eax
 	// For page faults, print decoded fault error code:
 	// U/K=fault occurred in user/kernel mode
 	// W/R=a write/read caused the fault
 	// PR=a protection violation caused the fault (NP=page not present).
 	if (tf->tf_trapno == T_PGFLT)
 		cprintf(" [%s, %s, %s]\n",
-f0103c72:	89 c2                	mov    %eax,%edx
-f0103c74:	83 e2 01             	and    $0x1,%edx
-f0103c77:	ba 95 61 10 f0       	mov    $0xf0106195,%edx
-f0103c7c:	b9 a0 61 10 f0       	mov    $0xf01061a0,%ecx
-f0103c81:	0f 45 ca             	cmovne %edx,%ecx
-f0103c84:	89 c2                	mov    %eax,%edx
-f0103c86:	83 e2 02             	and    $0x2,%edx
-f0103c89:	ba ac 61 10 f0       	mov    $0xf01061ac,%edx
-f0103c8e:	be b2 61 10 f0       	mov    $0xf01061b2,%esi
-f0103c93:	0f 44 d6             	cmove  %esi,%edx
-f0103c96:	83 e0 04             	and    $0x4,%eax
-f0103c99:	b8 b7 61 10 f0       	mov    $0xf01061b7,%eax
-f0103c9e:	be cc 62 10 f0       	mov    $0xf01062cc,%esi
-f0103ca3:	0f 44 c6             	cmove  %esi,%eax
-f0103ca6:	89 4c 24 0c          	mov    %ecx,0xc(%esp)
-f0103caa:	89 54 24 08          	mov    %edx,0x8(%esp)
-f0103cae:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103cb2:	c7 04 24 11 62 10 f0 	movl   $0xf0106211,(%esp)
-f0103cb9:	e8 46 fa ff ff       	call   f0103704 <cprintf>
-f0103cbe:	eb 0c                	jmp    f0103ccc <print_trapframe+0x117>
+f0103c6c:	89 c2                	mov    %eax,%edx
+f0103c6e:	83 e2 01             	and    $0x1,%edx
+f0103c71:	ba 95 61 10 f0       	mov    $0xf0106195,%edx
+f0103c76:	b9 a0 61 10 f0       	mov    $0xf01061a0,%ecx
+f0103c7b:	0f 45 ca             	cmovne %edx,%ecx
+f0103c7e:	89 c2                	mov    %eax,%edx
+f0103c80:	83 e2 02             	and    $0x2,%edx
+f0103c83:	ba ac 61 10 f0       	mov    $0xf01061ac,%edx
+f0103c88:	be b2 61 10 f0       	mov    $0xf01061b2,%esi
+f0103c8d:	0f 44 d6             	cmove  %esi,%edx
+f0103c90:	83 e0 04             	and    $0x4,%eax
+f0103c93:	b8 b7 61 10 f0       	mov    $0xf01061b7,%eax
+f0103c98:	be cc 62 10 f0       	mov    $0xf01062cc,%esi
+f0103c9d:	0f 44 c6             	cmove  %esi,%eax
+f0103ca0:	89 4c 24 0c          	mov    %ecx,0xc(%esp)
+f0103ca4:	89 54 24 08          	mov    %edx,0x8(%esp)
+f0103ca8:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103cac:	c7 04 24 11 62 10 f0 	movl   $0xf0106211,(%esp)
+f0103cb3:	e8 4c fa ff ff       	call   f0103704 <cprintf>
+f0103cb8:	eb 0c                	jmp    f0103cc6 <print_trapframe+0x117>
 			tf->tf_err & 4 ? "user" : "kernel",
 			tf->tf_err & 2 ? "write" : "read",
 			tf->tf_err & 1 ? "protection" : "not-present");
 	else
 		cprintf("\n");
-f0103cc0:	c7 04 24 e1 5f 10 f0 	movl   $0xf0105fe1,(%esp)
-f0103cc7:	e8 38 fa ff ff       	call   f0103704 <cprintf>
+f0103cba:	c7 04 24 e1 5f 10 f0 	movl   $0xf0105fe1,(%esp)
+f0103cc1:	e8 3e fa ff ff       	call   f0103704 <cprintf>
 	cprintf("  eip  0x%08x\n", tf->tf_eip);
-f0103ccc:	8b 43 30             	mov    0x30(%ebx),%eax
-f0103ccf:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103cd3:	c7 04 24 20 62 10 f0 	movl   $0xf0106220,(%esp)
-f0103cda:	e8 25 fa ff ff       	call   f0103704 <cprintf>
+f0103cc6:	8b 43 30             	mov    0x30(%ebx),%eax
+f0103cc9:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103ccd:	c7 04 24 20 62 10 f0 	movl   $0xf0106220,(%esp)
+f0103cd4:	e8 2b fa ff ff       	call   f0103704 <cprintf>
 	cprintf("  cs   0x----%04x\n", tf->tf_cs);
-f0103cdf:	0f b7 43 34          	movzwl 0x34(%ebx),%eax
-f0103ce3:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103ce7:	c7 04 24 2f 62 10 f0 	movl   $0xf010622f,(%esp)
-f0103cee:	e8 11 fa ff ff       	call   f0103704 <cprintf>
+f0103cd9:	0f b7 43 34          	movzwl 0x34(%ebx),%eax
+f0103cdd:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103ce1:	c7 04 24 2f 62 10 f0 	movl   $0xf010622f,(%esp)
+f0103ce8:	e8 17 fa ff ff       	call   f0103704 <cprintf>
 	cprintf("  flag 0x%08x\n", tf->tf_eflags);
-f0103cf3:	8b 43 38             	mov    0x38(%ebx),%eax
-f0103cf6:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103cfa:	c7 04 24 42 62 10 f0 	movl   $0xf0106242,(%esp)
-f0103d01:	e8 fe f9 ff ff       	call   f0103704 <cprintf>
+f0103ced:	8b 43 38             	mov    0x38(%ebx),%eax
+f0103cf0:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103cf4:	c7 04 24 42 62 10 f0 	movl   $0xf0106242,(%esp)
+f0103cfb:	e8 04 fa ff ff       	call   f0103704 <cprintf>
 	if ((tf->tf_cs & 3) != 0) {
-f0103d06:	f6 43 34 03          	testb  $0x3,0x34(%ebx)
-f0103d0a:	74 27                	je     f0103d33 <print_trapframe+0x17e>
+f0103d00:	f6 43 34 03          	testb  $0x3,0x34(%ebx)
+f0103d04:	74 27                	je     f0103d2d <print_trapframe+0x17e>
 		cprintf("  esp  0x%08x\n", tf->tf_esp);
-f0103d0c:	8b 43 3c             	mov    0x3c(%ebx),%eax
-f0103d0f:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103d13:	c7 04 24 51 62 10 f0 	movl   $0xf0106251,(%esp)
-f0103d1a:	e8 e5 f9 ff ff       	call   f0103704 <cprintf>
+f0103d06:	8b 43 3c             	mov    0x3c(%ebx),%eax
+f0103d09:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103d0d:	c7 04 24 51 62 10 f0 	movl   $0xf0106251,(%esp)
+f0103d14:	e8 eb f9 ff ff       	call   f0103704 <cprintf>
 		cprintf("  ss   0x----%04x\n", tf->tf_ss);
-f0103d1f:	0f b7 43 40          	movzwl 0x40(%ebx),%eax
-f0103d23:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103d27:	c7 04 24 60 62 10 f0 	movl   $0xf0106260,(%esp)
-f0103d2e:	e8 d1 f9 ff ff       	call   f0103704 <cprintf>
+f0103d19:	0f b7 43 40          	movzwl 0x40(%ebx),%eax
+f0103d1d:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103d21:	c7 04 24 60 62 10 f0 	movl   $0xf0106260,(%esp)
+f0103d28:	e8 d7 f9 ff ff       	call   f0103704 <cprintf>
 	}
 }
-f0103d33:	83 c4 10             	add    $0x10,%esp
-f0103d36:	5b                   	pop    %ebx
-f0103d37:	5e                   	pop    %esi
-f0103d38:	5d                   	pop    %ebp
-f0103d39:	c3                   	ret    
+f0103d2d:	83 c4 10             	add    $0x10,%esp
+f0103d30:	5b                   	pop    %ebx
+f0103d31:	5e                   	pop    %esi
+f0103d32:	5d                   	pop    %ebp
+f0103d33:	c3                   	ret    
 
-f0103d3a <page_fault_handler>:
+f0103d34 <page_fault_handler>:
 }
 
 
 void
 page_fault_handler(struct Trapframe *tf)
 {
-f0103d3a:	55                   	push   %ebp
-f0103d3b:	89 e5                	mov    %esp,%ebp
-f0103d3d:	53                   	push   %ebx
-f0103d3e:	83 ec 14             	sub    $0x14,%esp
-f0103d41:	8b 5d 08             	mov    0x8(%ebp),%ebx
-f0103d44:	0f 20 d0             	mov    %cr2,%eax
+f0103d34:	55                   	push   %ebp
+f0103d35:	89 e5                	mov    %esp,%ebp
+f0103d37:	53                   	push   %ebx
+f0103d38:	83 ec 14             	sub    $0x14,%esp
+f0103d3b:	8b 5d 08             	mov    0x8(%ebp),%ebx
+f0103d3e:	0f 20 d0             	mov    %cr2,%eax
 	fault_va = rcr2();
 
 	// Handle kernel-mode page faults.
 
 	// LAB 3: Your code here.
 	if(tf->tf_cs == GD_KT)
-f0103d47:	66 83 7b 34 08       	cmpw   $0x8,0x34(%ebx)
-f0103d4c:	75 1c                	jne    f0103d6a <page_fault_handler+0x30>
+f0103d41:	66 83 7b 34 08       	cmpw   $0x8,0x34(%ebx)
+f0103d46:	75 1c                	jne    f0103d64 <page_fault_handler+0x30>
 		panic("page fault happens in the kern mode");
-f0103d4e:	c7 44 24 08 18 64 10 	movl   $0xf0106418,0x8(%esp)
-f0103d55:	f0 
-f0103d56:	c7 44 24 04 12 01 00 	movl   $0x112,0x4(%esp)
-f0103d5d:	00 
-f0103d5e:	c7 04 24 73 62 10 f0 	movl   $0xf0106273,(%esp)
-f0103d65:	e8 4c c3 ff ff       	call   f01000b6 <_panic>
+f0103d48:	c7 44 24 08 18 64 10 	movl   $0xf0106418,0x8(%esp)
+f0103d4f:	f0 
+f0103d50:	c7 44 24 04 12 01 00 	movl   $0x112,0x4(%esp)
+f0103d57:	00 
+f0103d58:	c7 04 24 73 62 10 f0 	movl   $0xf0106273,(%esp)
+f0103d5f:	e8 52 c3 ff ff       	call   f01000b6 <_panic>
 
 	// We've already handled kernel-mode exceptions, so if we get here,
 	// the page fault happened in user mode.
 
 	// Destroy the environment that caused the fault.
 	cprintf("[%08x] user fault va %08x ip %08x\n",
-f0103d6a:	8b 53 30             	mov    0x30(%ebx),%edx
-f0103d6d:	89 54 24 0c          	mov    %edx,0xc(%esp)
-f0103d71:	89 44 24 08          	mov    %eax,0x8(%esp)
-f0103d75:	a1 c8 d0 17 f0       	mov    0xf017d0c8,%eax
-f0103d7a:	8b 40 48             	mov    0x48(%eax),%eax
-f0103d7d:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103d81:	c7 04 24 3c 64 10 f0 	movl   $0xf010643c,(%esp)
-f0103d88:	e8 77 f9 ff ff       	call   f0103704 <cprintf>
+f0103d64:	8b 53 30             	mov    0x30(%ebx),%edx
+f0103d67:	89 54 24 0c          	mov    %edx,0xc(%esp)
+f0103d6b:	89 44 24 08          	mov    %eax,0x8(%esp)
+f0103d6f:	a1 c8 d0 17 f0       	mov    0xf017d0c8,%eax
+f0103d74:	8b 40 48             	mov    0x48(%eax),%eax
+f0103d77:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103d7b:	c7 04 24 3c 64 10 f0 	movl   $0xf010643c,(%esp)
+f0103d82:	e8 7d f9 ff ff       	call   f0103704 <cprintf>
 		curenv->env_id, fault_va, tf->tf_eip);
 	print_trapframe(tf);
-f0103d8d:	89 1c 24             	mov    %ebx,(%esp)
-f0103d90:	e8 20 fe ff ff       	call   f0103bb5 <print_trapframe>
+f0103d87:	89 1c 24             	mov    %ebx,(%esp)
+f0103d8a:	e8 20 fe ff ff       	call   f0103baf <print_trapframe>
 	env_destroy(curenv);
-f0103d95:	a1 c8 d0 17 f0       	mov    0xf017d0c8,%eax
-f0103d9a:	89 04 24             	mov    %eax,(%esp)
-f0103d9d:	e8 2f f8 ff ff       	call   f01035d1 <env_destroy>
+f0103d8f:	a1 c8 d0 17 f0       	mov    0xf017d0c8,%eax
+f0103d94:	89 04 24             	mov    %eax,(%esp)
+f0103d97:	e8 35 f8 ff ff       	call   f01035d1 <env_destroy>
 }
-f0103da2:	83 c4 14             	add    $0x14,%esp
-f0103da5:	5b                   	pop    %ebx
-f0103da6:	5d                   	pop    %ebp
-f0103da7:	c3                   	ret    
+f0103d9c:	83 c4 14             	add    $0x14,%esp
+f0103d9f:	5b                   	pop    %ebx
+f0103da0:	5d                   	pop    %ebp
+f0103da1:	c3                   	ret    
 
-f0103da8 <trap>:
+f0103da2 <trap>:
 	}
 }
 
 void
 trap(struct Trapframe *tf)
 {
-f0103da8:	55                   	push   %ebp
-f0103da9:	89 e5                	mov    %esp,%ebp
-f0103dab:	57                   	push   %edi
-f0103dac:	56                   	push   %esi
-f0103dad:	83 ec 20             	sub    $0x20,%esp
-f0103db0:	8b 75 08             	mov    0x8(%ebp),%esi
+f0103da2:	55                   	push   %ebp
+f0103da3:	89 e5                	mov    %esp,%ebp
+f0103da5:	57                   	push   %edi
+f0103da6:	56                   	push   %esi
+f0103da7:	83 ec 20             	sub    $0x20,%esp
+f0103daa:	8b 75 08             	mov    0x8(%ebp),%esi
 	// The environment may have set DF and some versions
 	// of GCC rely on DF being clear
 	asm volatile("cld" ::: "cc");
-f0103db3:	fc                   	cld    
+f0103dad:	fc                   	cld    
 
 static __inline uint32_t
 read_eflags(void)
 {
 	uint32_t eflags;
 	__asm __volatile("pushfl; popl %0" : "=r" (eflags));
-f0103db4:	9c                   	pushf  
-f0103db5:	58                   	pop    %eax
+f0103dae:	9c                   	pushf  
+f0103daf:	58                   	pop    %eax
 
 	// Check that interrupts are disabled.  If this assertion
 	// fails, DO NOT be tempted to fix it by inserting a "cli" in
 	// the interrupt path.
 	assert(!(read_eflags() & FL_IF));
-f0103db6:	f6 c4 02             	test   $0x2,%ah
-f0103db9:	74 24                	je     f0103ddf <trap+0x37>
-f0103dbb:	c7 44 24 0c 7f 62 10 	movl   $0xf010627f,0xc(%esp)
-f0103dc2:	f0 
-f0103dc3:	c7 44 24 08 3f 5d 10 	movl   $0xf0105d3f,0x8(%esp)
-f0103dca:	f0 
-f0103dcb:	c7 44 24 04 e9 00 00 	movl   $0xe9,0x4(%esp)
-f0103dd2:	00 
-f0103dd3:	c7 04 24 73 62 10 f0 	movl   $0xf0106273,(%esp)
-f0103dda:	e8 d7 c2 ff ff       	call   f01000b6 <_panic>
+f0103db0:	f6 c4 02             	test   $0x2,%ah
+f0103db3:	74 24                	je     f0103dd9 <trap+0x37>
+f0103db5:	c7 44 24 0c 7f 62 10 	movl   $0xf010627f,0xc(%esp)
+f0103dbc:	f0 
+f0103dbd:	c7 44 24 08 3f 5d 10 	movl   $0xf0105d3f,0x8(%esp)
+f0103dc4:	f0 
+f0103dc5:	c7 44 24 04 e9 00 00 	movl   $0xe9,0x4(%esp)
+f0103dcc:	00 
+f0103dcd:	c7 04 24 73 62 10 f0 	movl   $0xf0106273,(%esp)
+f0103dd4:	e8 dd c2 ff ff       	call   f01000b6 <_panic>
 
 	cprintf("Incoming TRAP frame at %p\n", tf);
-f0103ddf:	89 74 24 04          	mov    %esi,0x4(%esp)
-f0103de3:	c7 04 24 98 62 10 f0 	movl   $0xf0106298,(%esp)
-f0103dea:	e8 15 f9 ff ff       	call   f0103704 <cprintf>
+f0103dd9:	89 74 24 04          	mov    %esi,0x4(%esp)
+f0103ddd:	c7 04 24 98 62 10 f0 	movl   $0xf0106298,(%esp)
+f0103de4:	e8 1b f9 ff ff       	call   f0103704 <cprintf>
 
-	if ((tf->tf_cs & 2) == 2) {
-f0103def:	f6 46 34 02          	testb  $0x2,0x34(%esi)
-f0103df3:	74 3c                	je     f0103e31 <trap+0x89>
+	if ((tf->tf_cs & 3) == 3) {
+f0103de9:	0f b7 46 34          	movzwl 0x34(%esi),%eax
+f0103ded:	83 e0 03             	and    $0x3,%eax
+f0103df0:	66 83 f8 03          	cmp    $0x3,%ax
+f0103df4:	75 3c                	jne    f0103e32 <trap+0x90>
 		// Trapped from user mode.
 		assert(curenv);
-f0103df5:	a1 c8 d0 17 f0       	mov    0xf017d0c8,%eax
-f0103dfa:	85 c0                	test   %eax,%eax
-f0103dfc:	75 24                	jne    f0103e22 <trap+0x7a>
-f0103dfe:	c7 44 24 0c b3 62 10 	movl   $0xf01062b3,0xc(%esp)
-f0103e05:	f0 
-f0103e06:	c7 44 24 08 3f 5d 10 	movl   $0xf0105d3f,0x8(%esp)
-f0103e0d:	f0 
-f0103e0e:	c7 44 24 04 ef 00 00 	movl   $0xef,0x4(%esp)
-f0103e15:	00 
-f0103e16:	c7 04 24 73 62 10 f0 	movl   $0xf0106273,(%esp)
-f0103e1d:	e8 94 c2 ff ff       	call   f01000b6 <_panic>
+f0103df6:	a1 c8 d0 17 f0       	mov    0xf017d0c8,%eax
+f0103dfb:	85 c0                	test   %eax,%eax
+f0103dfd:	75 24                	jne    f0103e23 <trap+0x81>
+f0103dff:	c7 44 24 0c b3 62 10 	movl   $0xf01062b3,0xc(%esp)
+f0103e06:	f0 
+f0103e07:	c7 44 24 08 3f 5d 10 	movl   $0xf0105d3f,0x8(%esp)
+f0103e0e:	f0 
+f0103e0f:	c7 44 24 04 ef 00 00 	movl   $0xef,0x4(%esp)
+f0103e16:	00 
+f0103e17:	c7 04 24 73 62 10 f0 	movl   $0xf0106273,(%esp)
+f0103e1e:	e8 93 c2 ff ff       	call   f01000b6 <_panic>
 
 		// Copy trap frame (which is currently on the stack)
 		// into 'curenv->env_tf', so that running the environment
 		// will restart at the trap point.
 		curenv->env_tf = *tf;
-f0103e22:	b9 11 00 00 00       	mov    $0x11,%ecx
-f0103e27:	89 c7                	mov    %eax,%edi
-f0103e29:	f3 a5                	rep movsl %ds:(%esi),%es:(%edi)
+f0103e23:	b9 11 00 00 00       	mov    $0x11,%ecx
+f0103e28:	89 c7                	mov    %eax,%edi
+f0103e2a:	f3 a5                	rep movsl %ds:(%esi),%es:(%edi)
 		// The trapframe on the stack should be ignored from here on.
 		tf = &curenv->env_tf;
-f0103e2b:	8b 35 c8 d0 17 f0    	mov    0xf017d0c8,%esi
+f0103e2c:	8b 35 c8 d0 17 f0    	mov    0xf017d0c8,%esi
 	}
 
 	// Record that tf is the last real trapframe so
 	// print_trapframe can print some additional information.
 	last_tf = tf;
-f0103e31:	89 35 e0 d8 17 f0    	mov    %esi,0xf017d8e0
+f0103e32:	89 35 e0 d8 17 f0    	mov    %esi,0xf017d8e0
 static void
 trap_dispatch(struct Trapframe *tf)
 {
 	// Handle processor exceptions.
 	// LAB 3: Your code here.
 	if(tf->tf_trapno == T_PGFLT){
-f0103e37:	8b 46 28             	mov    0x28(%esi),%eax
-f0103e3a:	83 f8 0e             	cmp    $0xe,%eax
-f0103e3d:	75 0a                	jne    f0103e49 <trap+0xa1>
+f0103e38:	8b 46 28             	mov    0x28(%esi),%eax
+f0103e3b:	83 f8 0e             	cmp    $0xe,%eax
+f0103e3e:	75 0a                	jne    f0103e4a <trap+0xa8>
 		page_fault_handler(tf);
-f0103e3f:	89 34 24             	mov    %esi,(%esp)
-f0103e42:	e8 f3 fe ff ff       	call   f0103d3a <page_fault_handler>
-f0103e47:	eb 7e                	jmp    f0103ec7 <trap+0x11f>
+f0103e40:	89 34 24             	mov    %esi,(%esp)
+f0103e43:	e8 ec fe ff ff       	call   f0103d34 <page_fault_handler>
+f0103e48:	eb 7e                	jmp    f0103ec8 <trap+0x126>
 		return;
 	}
 	if(tf->tf_trapno == T_BRKPT){
-f0103e49:	83 f8 03             	cmp    $0x3,%eax
-f0103e4c:	75 0a                	jne    f0103e58 <trap+0xb0>
+f0103e4a:	83 f8 03             	cmp    $0x3,%eax
+f0103e4d:	75 0a                	jne    f0103e59 <trap+0xb7>
 		monitor(tf);
-f0103e4e:	89 34 24             	mov    %esi,(%esp)
-f0103e51:	e8 03 c9 ff ff       	call   f0100759 <monitor>
-f0103e56:	eb 6f                	jmp    f0103ec7 <trap+0x11f>
+f0103e4f:	89 34 24             	mov    %esi,(%esp)
+f0103e52:	e8 02 c9 ff ff       	call   f0100759 <monitor>
+f0103e57:	eb 6f                	jmp    f0103ec8 <trap+0x126>
 		return;
 	}
 	if(tf->tf_trapno == T_SYSCALL){
-f0103e58:	83 f8 30             	cmp    $0x30,%eax
-f0103e5b:	75 32                	jne    f0103e8f <trap+0xe7>
+f0103e59:	83 f8 30             	cmp    $0x30,%eax
+f0103e5c:	75 32                	jne    f0103e90 <trap+0xee>
 		tf->tf_regs.reg_eax= syscall(tf->tf_regs.reg_eax, 
-f0103e5d:	8b 46 04             	mov    0x4(%esi),%eax
-f0103e60:	89 44 24 14          	mov    %eax,0x14(%esp)
-f0103e64:	8b 06                	mov    (%esi),%eax
-f0103e66:	89 44 24 10          	mov    %eax,0x10(%esp)
-f0103e6a:	8b 46 10             	mov    0x10(%esi),%eax
-f0103e6d:	89 44 24 0c          	mov    %eax,0xc(%esp)
-f0103e71:	8b 46 18             	mov    0x18(%esi),%eax
-f0103e74:	89 44 24 08          	mov    %eax,0x8(%esp)
-f0103e78:	8b 46 14             	mov    0x14(%esi),%eax
-f0103e7b:	89 44 24 04          	mov    %eax,0x4(%esp)
-f0103e7f:	8b 46 1c             	mov    0x1c(%esi),%eax
-f0103e82:	89 04 24             	mov    %eax,(%esp)
-f0103e85:	e8 46 01 00 00       	call   f0103fd0 <syscall>
-f0103e8a:	89 46 1c             	mov    %eax,0x1c(%esi)
-f0103e8d:	eb 38                	jmp    f0103ec7 <trap+0x11f>
+f0103e5e:	8b 46 04             	mov    0x4(%esi),%eax
+f0103e61:	89 44 24 14          	mov    %eax,0x14(%esp)
+f0103e65:	8b 06                	mov    (%esi),%eax
+f0103e67:	89 44 24 10          	mov    %eax,0x10(%esp)
+f0103e6b:	8b 46 10             	mov    0x10(%esi),%eax
+f0103e6e:	89 44 24 0c          	mov    %eax,0xc(%esp)
+f0103e72:	8b 46 18             	mov    0x18(%esi),%eax
+f0103e75:	89 44 24 08          	mov    %eax,0x8(%esp)
+f0103e79:	8b 46 14             	mov    0x14(%esi),%eax
+f0103e7c:	89 44 24 04          	mov    %eax,0x4(%esp)
+f0103e80:	8b 46 1c             	mov    0x1c(%esi),%eax
+f0103e83:	89 04 24             	mov    %eax,(%esp)
+f0103e86:	e8 45 01 00 00       	call   f0103fd0 <syscall>
+f0103e8b:	89 46 1c             	mov    %eax,0x1c(%esi)
+f0103e8e:	eb 38                	jmp    f0103ec8 <trap+0x126>
                             				tf->tf_regs.reg_edi,
                             				tf->tf_regs.reg_esi);
                             return;	
 	}
 	// Unexpected trap: The user process or the kernel has a bug.
 	print_trapframe(tf);
-f0103e8f:	89 34 24             	mov    %esi,(%esp)
-f0103e92:	e8 1e fd ff ff       	call   f0103bb5 <print_trapframe>
+f0103e90:	89 34 24             	mov    %esi,(%esp)
+f0103e93:	e8 17 fd ff ff       	call   f0103baf <print_trapframe>
 	if (tf->tf_cs == GD_KT)
-f0103e97:	66 83 7e 34 08       	cmpw   $0x8,0x34(%esi)
-f0103e9c:	75 1c                	jne    f0103eba <trap+0x112>
+f0103e98:	66 83 7e 34 08       	cmpw   $0x8,0x34(%esi)
+f0103e9d:	75 1c                	jne    f0103ebb <trap+0x119>
 		panic("unhandled trap in kernel");
-f0103e9e:	c7 44 24 08 ba 62 10 	movl   $0xf01062ba,0x8(%esp)
-f0103ea5:	f0 
-f0103ea6:	c7 44 24 04 d8 00 00 	movl   $0xd8,0x4(%esp)
-f0103ead:	00 
-f0103eae:	c7 04 24 73 62 10 f0 	movl   $0xf0106273,(%esp)
-f0103eb5:	e8 fc c1 ff ff       	call   f01000b6 <_panic>
+f0103e9f:	c7 44 24 08 ba 62 10 	movl   $0xf01062ba,0x8(%esp)
+f0103ea6:	f0 
+f0103ea7:	c7 44 24 04 d8 00 00 	movl   $0xd8,0x4(%esp)
+f0103eae:	00 
+f0103eaf:	c7 04 24 73 62 10 f0 	movl   $0xf0106273,(%esp)
+f0103eb6:	e8 fb c1 ff ff       	call   f01000b6 <_panic>
 	else {
 		env_destroy(curenv);
-f0103eba:	a1 c8 d0 17 f0       	mov    0xf017d0c8,%eax
-f0103ebf:	89 04 24             	mov    %eax,(%esp)
-f0103ec2:	e8 0a f7 ff ff       	call   f01035d1 <env_destroy>
+f0103ebb:	a1 c8 d0 17 f0       	mov    0xf017d0c8,%eax
+f0103ec0:	89 04 24             	mov    %eax,(%esp)
+f0103ec3:	e8 09 f7 ff ff       	call   f01035d1 <env_destroy>
 
 	// Dispatch based on what type of trap occurred
 	trap_dispatch(tf);
 
 	// Return to the current environment, which should be running.
 	assert(curenv && curenv->env_status == ENV_RUNNING);
-f0103ec7:	a1 c8 d0 17 f0       	mov    0xf017d0c8,%eax
-f0103ecc:	85 c0                	test   %eax,%eax
-f0103ece:	74 06                	je     f0103ed6 <trap+0x12e>
-f0103ed0:	83 78 54 03          	cmpl   $0x3,0x54(%eax)
-f0103ed4:	74 24                	je     f0103efa <trap+0x152>
-f0103ed6:	c7 44 24 0c 60 64 10 	movl   $0xf0106460,0xc(%esp)
-f0103edd:	f0 
-f0103ede:	c7 44 24 08 3f 5d 10 	movl   $0xf0105d3f,0x8(%esp)
-f0103ee5:	f0 
-f0103ee6:	c7 44 24 04 01 01 00 	movl   $0x101,0x4(%esp)
-f0103eed:	00 
-f0103eee:	c7 04 24 73 62 10 f0 	movl   $0xf0106273,(%esp)
-f0103ef5:	e8 bc c1 ff ff       	call   f01000b6 <_panic>
+f0103ec8:	a1 c8 d0 17 f0       	mov    0xf017d0c8,%eax
+f0103ecd:	85 c0                	test   %eax,%eax
+f0103ecf:	74 06                	je     f0103ed7 <trap+0x135>
+f0103ed1:	83 78 54 03          	cmpl   $0x3,0x54(%eax)
+f0103ed5:	74 24                	je     f0103efb <trap+0x159>
+f0103ed7:	c7 44 24 0c 60 64 10 	movl   $0xf0106460,0xc(%esp)
+f0103ede:	f0 
+f0103edf:	c7 44 24 08 3f 5d 10 	movl   $0xf0105d3f,0x8(%esp)
+f0103ee6:	f0 
+f0103ee7:	c7 44 24 04 01 01 00 	movl   $0x101,0x4(%esp)
+f0103eee:	00 
+f0103eef:	c7 04 24 73 62 10 f0 	movl   $0xf0106273,(%esp)
+f0103ef6:	e8 bb c1 ff ff       	call   f01000b6 <_panic>
 	env_run(curenv);
-f0103efa:	89 04 24             	mov    %eax,(%esp)
-f0103efd:	e8 26 f7 ff ff       	call   f0103628 <env_run>
+f0103efb:	89 04 24             	mov    %eax,(%esp)
+f0103efe:	e8 25 f7 ff ff       	call   f0103628 <env_run>
+f0103f03:	90                   	nop
 
-f0103f02 <divide_error>:
+f0103f04 <divide_error1>:
 
 /*
  * Lab 3: Your code here for generating entry points for the different traps.
  */
 
-	TRAPHANDLER_NOEC(divide_error, T_DIVIDE)				# divide error
-f0103f02:	6a 00                	push   $0x0
+	TRAPHANDLER_NOEC(divide_error1, T_DIVIDE)				# divide error
 f0103f04:	6a 00                	push   $0x0
-f0103f06:	e9 a4 00 00 00       	jmp    f0103faf <_alltraps>
-f0103f0b:	90                   	nop
+f0103f06:	6a 00                	push   $0x0
+f0103f08:	e9 a4 00 00 00       	jmp    f0103fb1 <_alltraps>
+f0103f0d:	90                   	nop
 
-f0103f0c <debug>:
-	TRAPHANDLER_NOEC(debug, T_DEBUG)					# debug exception
-f0103f0c:	6a 00                	push   $0x0
-f0103f0e:	6a 01                	push   $0x1
-f0103f10:	e9 9a 00 00 00       	jmp    f0103faf <_alltraps>
-f0103f15:	90                   	nop
+f0103f0e <debug1>:
+	TRAPHANDLER_NOEC(debug1, T_DEBUG)					# debug exception
+f0103f0e:	6a 00                	push   $0x0
+f0103f10:	6a 01                	push   $0x1
+f0103f12:	e9 9a 00 00 00       	jmp    f0103fb1 <_alltraps>
+f0103f17:	90                   	nop
 
-f0103f16 <nmi>:
-	TRAPHANDLER_NOEC(nmi, T_NMI)					# non-maskable interrupt
-f0103f16:	6a 00                	push   $0x0
-f0103f18:	6a 02                	push   $0x2
-f0103f1a:	e9 90 00 00 00       	jmp    f0103faf <_alltraps>
-f0103f1f:	90                   	nop
+f0103f18 <nmi1>:
+	TRAPHANDLER_NOEC(nmi1, T_NMI)					# non-maskable interrupt
+f0103f18:	6a 00                	push   $0x0
+f0103f1a:	6a 02                	push   $0x2
+f0103f1c:	e9 90 00 00 00       	jmp    f0103fb1 <_alltraps>
+f0103f21:	90                   	nop
 
-f0103f20 <breakpoint>:
-   	 TRAPHANDLER_NOEC(breakpoint, T_BRKPT)				# breakpoint
-f0103f20:	6a 00                	push   $0x0
-f0103f22:	6a 03                	push   $0x3
-f0103f24:	e9 86 00 00 00       	jmp    f0103faf <_alltraps>
-f0103f29:	90                   	nop
+f0103f22 <breakpoint1>:
+   	 TRAPHANDLER_NOEC(breakpoint1, T_BRKPT)				# breakpoint
+f0103f22:	6a 00                	push   $0x0
+f0103f24:	6a 03                	push   $0x3
+f0103f26:	e9 86 00 00 00       	jmp    f0103fb1 <_alltraps>
+f0103f2b:	90                   	nop
 
-f0103f2a <overflow>:
-	TRAPHANDLER_NOEC(overflow, T_OFLOW)				# overflow
-f0103f2a:	6a 00                	push   $0x0
-f0103f2c:	6a 04                	push   $0x4
-f0103f2e:	e9 7c 00 00 00       	jmp    f0103faf <_alltraps>
-f0103f33:	90                   	nop
+f0103f2c <overflow1>:
+	TRAPHANDLER_NOEC(overflow1, T_OFLOW)				# overflow
+f0103f2c:	6a 00                	push   $0x0
+f0103f2e:	6a 04                	push   $0x4
+f0103f30:	e9 7c 00 00 00       	jmp    f0103fb1 <_alltraps>
+f0103f35:	90                   	nop
 
-f0103f34 <bounds>:
-	TRAPHANDLER_NOEC(bounds, T_BOUND)				# bounds check
-f0103f34:	6a 00                	push   $0x0
-f0103f36:	6a 05                	push   $0x5
-f0103f38:	e9 72 00 00 00       	jmp    f0103faf <_alltraps>
-f0103f3d:	90                   	nop
+f0103f36 <bounds1>:
+	TRAPHANDLER_NOEC(bounds1, T_BOUND)				# bounds check
+f0103f36:	6a 00                	push   $0x0
+f0103f38:	6a 05                	push   $0x5
+f0103f3a:	e9 72 00 00 00       	jmp    f0103fb1 <_alltraps>
+f0103f3f:	90                   	nop
 
-f0103f3e <invalid_op>:
-	TRAPHANDLER_NOEC(invalid_op, T_ILLOP)				# illegal opcode
-f0103f3e:	6a 00                	push   $0x0
-f0103f40:	6a 06                	push   $0x6
-f0103f42:	e9 68 00 00 00       	jmp    f0103faf <_alltraps>
-f0103f47:	90                   	nop
+f0103f40 <invalid_op1>:
+	TRAPHANDLER_NOEC(invalid_op1, T_ILLOP)				# illegal opcode
+f0103f40:	6a 00                	push   $0x0
+f0103f42:	6a 06                	push   $0x6
+f0103f44:	e9 68 00 00 00       	jmp    f0103fb1 <_alltraps>
+f0103f49:	90                   	nop
 
-f0103f48 <device_not_available>:
-	TRAPHANDLER_NOEC(device_not_available, T_DEVICE)			# device not available
-f0103f48:	6a 00                	push   $0x0
-f0103f4a:	6a 07                	push   $0x7
-f0103f4c:	e9 5e 00 00 00       	jmp    f0103faf <_alltraps>
-f0103f51:	90                   	nop
+f0103f4a <device_not_available1>:
+	TRAPHANDLER_NOEC(device_not_available1, T_DEVICE)			# device not available
+f0103f4a:	6a 00                	push   $0x0
+f0103f4c:	6a 07                	push   $0x7
+f0103f4e:	e9 5e 00 00 00       	jmp    f0103fb1 <_alltraps>
+f0103f53:	90                   	nop
 
-f0103f52 <double_fault>:
-	TRAPHANDLER(double_fault, T_DBLFLT)					# double fault
-f0103f52:	6a 08                	push   $0x8
-f0103f54:	e9 56 00 00 00       	jmp    f0103faf <_alltraps>
-f0103f59:	90                   	nop
+f0103f54 <double_fault1>:
+	TRAPHANDLER(double_fault1, T_DBLFLT)					# double fault
+f0103f54:	6a 08                	push   $0x8
+f0103f56:	e9 56 00 00 00       	jmp    f0103fb1 <_alltraps>
+f0103f5b:	90                   	nop
 
-f0103f5a <invalid_TSS>:
-	TRAPHANDLER(invalid_TSS, T_TSS)					# invalid task switch segment
-f0103f5a:	6a 0a                	push   $0xa
-f0103f5c:	e9 4e 00 00 00       	jmp    f0103faf <_alltraps>
-f0103f61:	90                   	nop
+f0103f5c <invalid_TSS1>:
+	TRAPHANDLER(invalid_TSS1, T_TSS)					# invalid task switch segment
+f0103f5c:	6a 0a                	push   $0xa
+f0103f5e:	e9 4e 00 00 00       	jmp    f0103fb1 <_alltraps>
+f0103f63:	90                   	nop
 
-f0103f62 <segment_not_present>:
-	TRAPHANDLER(segment_not_present, T_SEGNP)				# segment not present
-f0103f62:	6a 0b                	push   $0xb
-f0103f64:	e9 46 00 00 00       	jmp    f0103faf <_alltraps>
-f0103f69:	90                   	nop
+f0103f64 <segment_not_present1>:
+	TRAPHANDLER(segment_not_present1, T_SEGNP)				# segment not present
+f0103f64:	6a 0b                	push   $0xb
+f0103f66:	e9 46 00 00 00       	jmp    f0103fb1 <_alltraps>
+f0103f6b:	90                   	nop
 
-f0103f6a <stack_segment>:
-	TRAPHANDLER(stack_segment, T_STACK)					# stack exception
-f0103f6a:	6a 0c                	push   $0xc
-f0103f6c:	e9 3e 00 00 00       	jmp    f0103faf <_alltraps>
-f0103f71:	90                   	nop
+f0103f6c <stack_segment1>:
+	TRAPHANDLER(stack_segment1, T_STACK)					# stack exception
+f0103f6c:	6a 0c                	push   $0xc
+f0103f6e:	e9 3e 00 00 00       	jmp    f0103fb1 <_alltraps>
+f0103f73:	90                   	nop
 
-f0103f72 <general_protection>:
-	TRAPHANDLER(general_protection, T_GPFLT)				# general protection fault
-f0103f72:	6a 0d                	push   $0xd
-f0103f74:	e9 36 00 00 00       	jmp    f0103faf <_alltraps>
-f0103f79:	90                   	nop
+f0103f74 <general_protection1>:
+	TRAPHANDLER(general_protection1, T_GPFLT)				# general protection fault
+f0103f74:	6a 0d                	push   $0xd
+f0103f76:	e9 36 00 00 00       	jmp    f0103fb1 <_alltraps>
+f0103f7b:	90                   	nop
 
-f0103f7a <page_fault>:
-	TRAPHANDLER(page_fault, T_PGFLT)					# page fault
-f0103f7a:	6a 0e                	push   $0xe
-f0103f7c:	e9 2e 00 00 00       	jmp    f0103faf <_alltraps>
-f0103f81:	90                   	nop
+f0103f7c <page_fault1>:
+	TRAPHANDLER(page_fault1, T_PGFLT)					# page fault
+f0103f7c:	6a 0e                	push   $0xe
+f0103f7e:	e9 2e 00 00 00       	jmp    f0103fb1 <_alltraps>
+f0103f83:	90                   	nop
 
-f0103f82 <float_point_error>:
-	TRAPHANDLER_NOEC(float_point_error, T_FPERR)				# floating point error
-f0103f82:	6a 00                	push   $0x0
-f0103f84:	6a 10                	push   $0x10
-f0103f86:	e9 24 00 00 00       	jmp    f0103faf <_alltraps>
-f0103f8b:	90                   	nop
+f0103f84 <float_point_error1>:
+	TRAPHANDLER_NOEC(float_point_error1, T_FPERR)				# floating point error
+f0103f84:	6a 00                	push   $0x0
+f0103f86:	6a 10                	push   $0x10
+f0103f88:	e9 24 00 00 00       	jmp    f0103fb1 <_alltraps>
+f0103f8d:	90                   	nop
 
-f0103f8c <alignment_check>:
-	TRAPHANDLER(alignment_check, T_ALIGN)				# alignment check
-f0103f8c:	6a 11                	push   $0x11
-f0103f8e:	e9 1c 00 00 00       	jmp    f0103faf <_alltraps>
-f0103f93:	90                   	nop
+f0103f8e <alignment_check1>:
+	TRAPHANDLER(alignment_check1, T_ALIGN)				# alignment check
+f0103f8e:	6a 11                	push   $0x11
+f0103f90:	e9 1c 00 00 00       	jmp    f0103fb1 <_alltraps>
+f0103f95:	90                   	nop
 
-f0103f94 <machine_check>:
-	TRAPHANDLER_NOEC(machine_check, T_MCHK)				# machine check
-f0103f94:	6a 00                	push   $0x0
-f0103f96:	6a 12                	push   $0x12
-f0103f98:	e9 12 00 00 00       	jmp    f0103faf <_alltraps>
-f0103f9d:	90                   	nop
+f0103f96 <machine_check1>:
+	TRAPHANDLER_NOEC(machine_check1, T_MCHK)				# machine check
+f0103f96:	6a 00                	push   $0x0
+f0103f98:	6a 12                	push   $0x12
+f0103f9a:	e9 12 00 00 00       	jmp    f0103fb1 <_alltraps>
+f0103f9f:	90                   	nop
 
-f0103f9e <SIMD_float_point_error>:
-	TRAPHANDLER_NOEC(SIMD_float_point_error, T_SIMDERR)		# SIMD floating point error
-f0103f9e:	6a 00                	push   $0x0
-f0103fa0:	6a 13                	push   $0x13
-f0103fa2:	e9 08 00 00 00       	jmp    f0103faf <_alltraps>
-f0103fa7:	90                   	nop
+f0103fa0 <SIMD_float_point_error1>:
+	TRAPHANDLER_NOEC(SIMD_float_point_error1, T_SIMDERR)		# SIMD floating point error
+f0103fa0:	6a 00                	push   $0x0
+f0103fa2:	6a 13                	push   $0x13
+f0103fa4:	e9 08 00 00 00       	jmp    f0103fb1 <_alltraps>
+f0103fa9:	90                   	nop
 
-f0103fa8 <system_call>:
+f0103faa <system_call1>:
 
-	TRAPHANDLER(system_call, T_SYSCALL)					#system call
-f0103fa8:	6a 30                	push   $0x30
-f0103faa:	e9 00 00 00 00       	jmp    f0103faf <_alltraps>
+	TRAPHANDLER(system_call1, T_SYSCALL)					#system call
+f0103faa:	6a 30                	push   $0x30
+f0103fac:	e9 00 00 00 00       	jmp    f0103fb1 <_alltraps>
 
-f0103faf <_alltraps>:
+f0103fb1 <_alltraps>:
 /*
  * Lab 3: Your code here for _alltraps
  */
 .globl _alltraps
 _alltraps:
 	pushl %ds
-f0103faf:	1e                   	push   %ds
+f0103fb1:	1e                   	push   %ds
 	pushl %es
-f0103fb0:	06                   	push   %es
+f0103fb2:	06                   	push   %es
 	pushal
-f0103fb1:	60                   	pusha  
+f0103fb3:	60                   	pusha  
 	movl $GD_KD, %eax
-f0103fb2:	b8 10 00 00 00       	mov    $0x10,%eax
+f0103fb4:	b8 10 00 00 00       	mov    $0x10,%eax
 	movw %ax, %ds
-f0103fb7:	8e d8                	mov    %eax,%ds
+f0103fb9:	8e d8                	mov    %eax,%ds
 	movw %ax, %es
-f0103fb9:	8e c0                	mov    %eax,%es
+f0103fbb:	8e c0                	mov    %eax,%es
 
-	push %esp
-f0103fbb:	54                   	push   %esp
+	pushl %esp
+f0103fbd:	54                   	push   %esp
 	call trap
-f0103fbc:	e8 e7 fd ff ff       	call   f0103da8 <trap>
-f0103fc1:	66 90                	xchg   %ax,%ax
+f0103fbe:	e8 df fd ff ff       	call   f0103da2 <trap>
 f0103fc3:	66 90                	xchg   %ax,%ax
 f0103fc5:	66 90                	xchg   %ax,%ax
 f0103fc7:	66 90                	xchg   %ax,%ax
@@ -7780,21 +7767,21 @@ f010421d:	eb 1a                	jmp    f0104239 <debuginfo_eip+0x77>
 		stab_end = __STAB_END__;
 		stabstr = __STABSTR_BEGIN__;
 		stabstr_end = __STABSTR_END__;
-f010421f:	c7 45 cc 68 0e 11 f0 	movl   $0xf0110e68,-0x34(%ebp)
+f010421f:	c7 45 cc 0d 0e 11 f0 	movl   $0xf0110e0d,-0x34(%ebp)
 
 	// Find the relevant set of stabs
 	if (addr >= ULIM) {
 		stabs = __STAB_BEGIN__;
 		stab_end = __STAB_END__;
 		stabstr = __STABSTR_BEGIN__;
-f0104226:	c7 45 d0 85 e4 10 f0 	movl   $0xf010e485,-0x30(%ebp)
+f0104226:	c7 45 d0 3d e4 10 f0 	movl   $0xf010e43d,-0x30(%ebp)
 	info->eip_fn_narg = 0;
 
 	// Find the relevant set of stabs
 	if (addr >= ULIM) {
 		stabs = __STAB_BEGIN__;
 		stab_end = __STAB_END__;
-f010422d:	b8 84 e4 10 f0       	mov    $0xf010e484,%eax
+f010422d:	b8 3c e4 10 f0       	mov    $0xf010e43c,%eax
 	info->eip_fn_addr = addr;
 	info->eip_fn_narg = 0;
 

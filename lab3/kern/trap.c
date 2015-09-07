@@ -65,8 +65,9 @@ trap_init(void)
 	extern struct Segdesc gdt[];
 
 	// LAB 3: Your code here.
+	
 	void divide_error();
-	void debug ();
+	void debug();
 	void nmi();
    	 void breakpoint();
 	void overflow();
@@ -85,24 +86,24 @@ trap_init(void)
 	void SIMD_float_point_error();
 	void system_call();
 
-	SETGATE(idt[T_DIVIDE],0,GD_KT,  divide_error, 0);
-	SETGATE(idt[T_DEBUG],0,GD_KT,  debug , 0);
-	SETGATE(idt[T_NMI],0,GD_KT,  nmi, 0);
-   	SETGATE(idt[T_BRKPT],0,GD_KT,  breakpoint,3);
-	SETGATE(idt[T_OFLOW],0,GD_KT,  overflow, 0);
-	SETGATE(idt[T_BOUND],0,GD_KT,  bounds, 0);
-	SETGATE(idt[T_ILLOP],0,GD_KT,  invalid_op, 0);
-	SETGATE(idt[T_DEVICE],0,GD_KT,  device_not_available, 0);
-	SETGATE(idt[T_DBLFLT],0,GD_KT,  double_fault, 0);
-	SETGATE(idt[T_TSS],0,GD_KT,  invalid_TSS, 0);
-	SETGATE(idt[T_SEGNP],0,GD_KT,  segment_not_present, 0);
-	SETGATE(idt[T_STACK],0,GD_KT,  stack_segment, 0);
-	SETGATE(idt[T_GPFLT],0,GD_KT,  general_protection, 0);
-	SETGATE(idt[T_PGFLT],0,GD_KT,  page_fault, 0);
-	SETGATE(idt[T_FPERR],0,GD_KT,  float_point_error, 0);
-	SETGATE(idt[T_ALIGN],0,GD_KT,  alignment_check, 0);
-	SETGATE(idt[T_MCHK],0,GD_KT,  machine_check, 0);
-	SETGATE(idt[T_SIMDERR],0,GD_KT,  SIMD_float_point_error, 0);
+	SETGATE(idt[0],0,GD_KT,  divide_error, 0);
+	SETGATE(idt[1],0,GD_KT,  debug , 0);
+	SETGATE(idt[2],0,GD_KT,  nmi, 0);
+   	SETGATE(idt[3],0,GD_KT,  breakpoint,3);
+	SETGATE(idt[4],0,GD_KT,  overflow, 0);
+	SETGATE(idt[5],0,GD_KT,  bounds, 0);
+	SETGATE(idt[6],0,GD_KT,  invalid_op, 0);
+	SETGATE(idt[7],0,GD_KT,  device_not_available, 0);
+	SETGATE(idt[8],0,GD_KT,  double_fault, 0);
+	SETGATE(idt[10],0,GD_KT,  invalid_TSS, 0);
+	SETGATE(idt[11],0,GD_KT,  segment_not_present, 0);
+	SETGATE(idt[12],0,GD_KT,  stack_segment, 0);
+	SETGATE(idt[13],0,GD_KT,  general_protection, 0);
+	SETGATE(idt[14],0,GD_KT,  page_fault, 0);
+	SETGATE(idt[15],0,GD_KT,  float_point_error, 0);
+	SETGATE(idt[16],0,GD_KT,  alignment_check, 0);
+	SETGATE(idt[17],0,GD_KT,  machine_check, 0);
+	SETGATE(idt[18],0,GD_KT,  SIMD_float_point_error, 0);
 	SETGATE(idt[T_SYSCALL],0,GD_KT,  system_call,3);
 
 
