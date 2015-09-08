@@ -48,29 +48,29 @@
 /*
  * Lab 3: Your code here for generating entry points for the different traps.
  */
+TRAPHANDLER_NOEC(handler0, T_DIVIDE)
+TRAPHANDLER_NOEC(handler1, T_DEBUG)
+TRAPHANDLER_NOEC(handler2, T_NMI)
+TRAPHANDLER_NOEC(handler3, T_BRKPT)
+TRAPHANDLER_NOEC(handler4, T_OFLOW)
+TRAPHANDLER_NOEC(handler5, T_BOUND)
+TRAPHANDLER_NOEC(handler6, T_ILLOP)
+TRAPHANDLER_NOEC(handler7, T_DEVICE)
+TRAPHANDLER(handler8, T_DBLFLT)
+TRAPHANDLER_NOEC(handler9, T_COPROC) /* reserved */
+TRAPHANDLER(handler10, T_TSS)
+TRAPHANDLER(handler11, T_SEGNP)
+TRAPHANDLER(handler12, T_STACK)
+TRAPHANDLER(handler13, T_GPFLT)
+TRAPHANDLER(handler14, T_PGFLT)
+TRAPHANDLER_NOEC(handler15, T_RES)  /* reserved */
+TRAPHANDLER_NOEC(handler16, T_FPERR)
+TRAPHANDLER(handler17, T_ALIGN)
+TRAPHANDLER_NOEC(handler18, T_MCHK)
+TRAPHANDLER_NOEC(handler19, T_SIMDERR)
 
-	TRAPHANDLER_NOEC(divide_error, T_DIVIDE)				# divide error
-	TRAPHANDLER_NOEC(debug, T_DEBUG)					# debug exception
-	TRAPHANDLER_NOEC(nmi, T_NMI)					# non-maskable interrupt
-   	 TRAPHANDLER_NOEC(breakpoint, T_BRKPT)				# breakpoint
-	TRAPHANDLER_NOEC(overflow, T_OFLOW)				# overflow
-	TRAPHANDLER_NOEC(bounds, T_BOUND)				# bounds check
-	TRAPHANDLER_NOEC(invalid_op, T_ILLOP)				# illegal opcode
-	TRAPHANDLER_NOEC(device_not_available, T_DEVICE)			# device not available
-	TRAPHANDLER(double_fault, T_DBLFLT)					# double fault
-	TRAPHANDLER(invalid_TSS, T_TSS)					# invalid task switch segment
-	TRAPHANDLER(segment_not_present, T_SEGNP)				# segment not present
-	TRAPHANDLER(stack_segment, T_STACK)					# stack exception
-	TRAPHANDLER(general_protection, T_GPFLT)				# general protection fault
-	TRAPHANDLER(page_fault, T_PGFLT)					# page fault
-	TRAPHANDLER_NOEC(float_point_error, T_FPERR)				# floating point error
-	TRAPHANDLER(alignment_check, T_ALIGN)				# alignment check
-	TRAPHANDLER_NOEC(machine_check, T_MCHK)				# machine check
-	TRAPHANDLER_NOEC(SIMD_float_point_error, T_SIMDERR)		# SIMD floating point error
-
-	TRAPHANDLER(system_call, T_SYSCALL)					#system call
-
-
+TRAPHANDLER_NOEC(handler_syscall, T_SYSCALL)
+	
 /*
  * Lab 3: Your code here for _alltraps
  */

@@ -66,45 +66,53 @@ trap_init(void)
 
 	// LAB 3: Your code here.
 	
-	void divide_error();
-	void debug();
-	void nmi();
-   	 void breakpoint();
-	void overflow();
-	void bounds();
-	void invalid_op();
-	void device_not_available();
-	void double_fault();
-	void invalid_TSS();
-	void segment_not_present();
-	void stack_segment();
-	void general_protection();
-	void page_fault();
-	void float_point_error();
-	void alignment_check();
-	void machine_check();
-	void SIMD_float_point_error();
-	void system_call();
+		// LAB 3: Your code here.
+    void handler0();
+    void handler1();
+    void handler2();
+    void handler3();
+    void handler4();
+    void handler5();
+    void handler6();
+    void handler7();
+    void handler8();
+    void handler9();
+    void handler10();
+    void handler11();
+    void handler12();
+    void handler13();
+    void handler14();
+    void handler15();
+    void handler16();
+    void handler17();
+    void handler18();
+    void handler19();
 
-	SETGATE(idt[0],0,GD_KT,  divide_error, 0);
-	SETGATE(idt[1],0,GD_KT,  debug , 0);
-	SETGATE(idt[2],0,GD_KT,  nmi, 0);
-   	SETGATE(idt[3],0,GD_KT,  breakpoint,3);
-	SETGATE(idt[4],0,GD_KT,  overflow, 0);
-	SETGATE(idt[5],0,GD_KT,  bounds, 0);
-	SETGATE(idt[6],0,GD_KT,  invalid_op, 0);
-	SETGATE(idt[7],0,GD_KT,  device_not_available, 0);
-	SETGATE(idt[8],0,GD_KT,  double_fault, 0);
-	SETGATE(idt[10],0,GD_KT,  invalid_TSS, 0);
-	SETGATE(idt[11],0,GD_KT,  segment_not_present, 0);
-	SETGATE(idt[12],0,GD_KT,  stack_segment, 0);
-	SETGATE(idt[13],0,GD_KT,  general_protection, 0);
-	SETGATE(idt[14],0,GD_KT,  page_fault, 0);
-	SETGATE(idt[15],0,GD_KT,  float_point_error, 0);
-	SETGATE(idt[16],0,GD_KT,  alignment_check, 0);
-	SETGATE(idt[17],0,GD_KT,  machine_check, 0);
-	SETGATE(idt[18],0,GD_KT,  SIMD_float_point_error, 0);
-	SETGATE(idt[T_SYSCALL],0,GD_KT,  system_call,3);
+    void handler_syscall();
+
+
+    SETGATE(idt[0], 0, GD_KT, handler0, 0);
+    SETGATE(idt[1], 0, GD_KT, handler1, 0);
+    SETGATE(idt[2], 0, GD_KT, handler2, 0);
+    SETGATE(idt[3], 0, GD_KT, handler3, 3);
+    SETGATE(idt[4], 0, GD_KT, handler4, 0);
+    SETGATE(idt[5], 0, GD_KT, handler5, 0);
+    SETGATE(idt[6], 0, GD_KT, handler6, 0);
+    SETGATE(idt[7], 0, GD_KT, handler7, 0);
+    SETGATE(idt[8], 0, GD_KT, handler8, 0);
+    SETGATE(idt[9], 0, GD_KT, handler9, 0);
+    SETGATE(idt[10], 0, GD_KT, handler10, 0);
+    SETGATE(idt[11], 0, GD_KT, handler11, 0);
+    SETGATE(idt[12], 0, GD_KT, handler12, 0);
+    SETGATE(idt[13], 0, GD_KT, handler13, 0);
+    SETGATE(idt[14], 0, GD_KT, handler14, 0);
+    SETGATE(idt[15], 0, GD_KT, handler15, 0);
+    SETGATE(idt[16], 0, GD_KT, handler16, 0);
+    SETGATE(idt[17], 0, GD_KT, handler17, 0);
+    SETGATE(idt[18], 0, GD_KT, handler18, 0);
+    SETGATE(idt[19], 0, GD_KT, handler19, 0);
+
+    SETGATE(idt[T_SYSCALL], 0, GD_KT, handler_syscall, 3);
 
 
 
