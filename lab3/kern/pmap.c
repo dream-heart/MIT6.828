@@ -402,6 +402,7 @@ pte_t *
 pgdir_walk(pde_t *pgdir, const void *va, int create)
 {
 	// Fill this function in
+	
 	int pdeIndex = (unsigned int)va >>22;
 	if(pgdir[pdeIndex] == 0 && create == 0)
 		return NULL;
@@ -421,6 +422,8 @@ pgdir_walk(pde_t *pgdir, const void *va, int create)
 	int pteIndex =(pte_t)va >>12 & 0x3ff;
 	pte_t * pte =(pte_t*) pgAdd + pteIndex;
 	return KADDR( (pte_t) pte );
+	
+
 }
 
 //
@@ -581,18 +584,38 @@ int
 user_mem_check(struct Env *env, const void *va, size_t len, int perm)
 {
 	// LAB 3: Your code here.
-	pte_t ea =(pte_t)  ROUNDUP(va+len, PGSIZE);
-	pte_t *pte;
-	perm |= PTE_U;
-	for(user_mem_check_addr = (pte_t) va; user_mem_check_addr != ea; user_mem_check_addr += PGSIZE){
-		page_lookup(env->env_pgdir, (void*)user_mem_check_addr, &pte);
-		*pte = *pte & 0xfff & perm;
-		if(*pte != perm)
-			return  -E_FAULT;
-		if(user_mem_check_addr > ULIM)
-			return user_mem_check_addr;
-	}
+	
+	pte_t * pte;
+    	void * addr, *end;
+
+    	addr = ROUNDDOWN((void *)va, PGSIZE);
+    	end = ROUNDUP((void *)(va + len), PGSIZE);
+
+    if (addr >= (void *)ULIM)
+    {
+        user_mem_check_addr = (uintptr_t)va;
+        return -E_FAULT;
+    }
+
+    for (; addr < end; addr += PGSIZE) {
+        pte = pgdir_walk(env->env_pgdir, addr, 0);
+        if (!pte || !(*pte & PTE_P) || (*pte & perm) != perm)
+        {
+            if (addr < va)
+            {
+                user_mem_check_addr = (uintptr_t)va;
+            }
+            else
+            {
+                user_mem_check_addr = (uintptr_t)addr;
+            }
+            
+            return -E_FAULT;
+        }
+    }
+
 	return 0;
+
 }
 
 //

@@ -152,6 +152,8 @@ env_init_percpu(void)
 	asm volatile("movw %%ax,%%ds" :: "a" (GD_KD));
 	asm volatile("movw %%ax,%%ss" :: "a" (GD_KD));
 	// Load the kernel text segment into CS.
+	//CS寄存器是不能用ｍｏｖ来直接赋值的，所以需要用ｌｊｍｐ　ｃｓ，ｉｐ来赋值
+	//ljmp长跳转，前一个是段，后一个是ｉｐ
 	asm volatile("ljmp %0,$1f\n 1:\n" :: "i" (GD_KT));
 	// For good measure, clear the local descriptor table (LDT),
 	// since we don't use it.
