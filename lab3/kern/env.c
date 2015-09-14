@@ -207,6 +207,7 @@ env_setup_vm(struct Env *e)
 	//for(i ; i<1024; i++)
 	//	e->env_pgdir[i] = kern_pgdir[i];
 	memcpy(e->env_pgdir, kern_pgdir, PGSIZE);
+	memset(e->env_pgdir, 0, UTOP>>PTSHIFT);
 	
 
 
@@ -434,7 +435,6 @@ env_create(uint8_t *binary, enum EnvType type)
 		panic("env_create fault\n");
 	load_icode(env, binary);
 	env->env_type = type;
-
 }
 
 //

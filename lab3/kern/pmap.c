@@ -5,6 +5,7 @@
 //page_insert()是va和物理页向关联，而boot_map_region()是和物理地址之间关联。
 
 //用户进程是在用户空间运行的，其需要在硬盘上有内容，才能加载到内存中，即地址空间中的内容。
+//页目录里面存储的是对应的二级页表的物理地址
 #include <inc/x86.h>
 #include <inc/mmu.h>
 #include <inc/error.h>
@@ -418,10 +419,10 @@ pgdir_walk(pde_t *pgdir, const void *va, int create)
 		pgdir[pdeIndex] = pgAddress;
 	}
 	pte_t pgAdd = pgdir[pdeIndex];
-	pgAdd = pgAdd>>12<<12;
+	pgAdd = pgAdd & (~0x3ff);
 	int pteIndex =(pte_t)va >>12 & 0x3ff;
-	pte_t * pte =(pte_t*) pgAdd + pteIndex;
-	return KADDR( (pte_t) pte );
+	pte_t* pte = (pte_t *)KADDR(pgAdd) + pteIndex;
+	return pte;
 	
 
 }
