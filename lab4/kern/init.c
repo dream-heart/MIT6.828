@@ -50,6 +50,9 @@ i386_init(void)
 
 	// Acquire the big kernel lock before waking up APs
 	// Your code here:
+	spin_initlock(&kernel_lock);
+	lock_kernel();
+
 
 	// Starting non-boot CPUs
 	boot_aps();
@@ -59,8 +62,19 @@ i386_init(void)
 	ENV_CREATE(TEST, ENV_TYPE_USER);
 #else
 	// Touch all you want.
-	ENV_CREATE(user_primes, ENV_TYPE_USER);
+	//ENV_CREATE(user_primes, ENV_TYPE_USER);
+//	ENV_CREATE(user_idle, ENV_TYPE_USER);
+	ENV_CREATE(user_yield, ENV_TYPE_USER);
+	ENV_CREATE(user_yield, ENV_TYPE_USER);
+	ENV_CREATE(user_yield, ENV_TYPE_USER);
+
 #endif // TEST*
+/*
+	cprintf("\n\nenvs[0] = %d, envs[1] = %d, envs[2]= %d\n",envs[0].env_status,
+														envs[1].env_status,
+														envs[2].env_status
+														);
+*/
 
 	// Schedule and run the first user environment!
 	sched_yield();
@@ -116,9 +130,11 @@ mp_main(void)
 	// only one CPU can enter the scheduler at a time!
 	//
 	// Your code here:
+		lock_kernel();
+		sched_yield();
 
 	// Remove this after you finish Exercise 4
-	for (;;);
+	//for (;;);
 }
 
 /*

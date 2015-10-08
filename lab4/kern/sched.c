@@ -29,10 +29,29 @@ sched_yield(void)
 	// below to halt the cpu.
 
 	// LAB 4: Your code here.
+	
+	struct Env *e = thiscpu->cpu_env;
+	int EnvID = 0;
+	int startID = 0;
+	int i=0;
+	if(e != NULL){	
+		EnvID =  e->env_id;
+		e->env_status = ENV_RUNNABLE;
+	}
+	startID = (EnvID+1) % (NENV-1);
+	//cprintf("startID = %d, EnvID = %d\n", startID, EnvID);
+	for(i = startID; i != EnvID; i = (i+1)%(NENV-1) ){
+		if(envs[i].env_status == ENV_RUNNABLE)
+			env_run(&envs[i]);
+	}
+
+	if(e)
+		env_run(e);
 
 	// sched_halt never returns
 	sched_halt();
-}
+	}
+
 
 // Halt this CPU when there is nothing to do. Wait until the
 // timer interrupt wakes it up. This function never returns.
