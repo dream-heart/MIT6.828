@@ -168,7 +168,7 @@ sys_exofork(void)
   80016a:	6b c0 7c             	imul   $0x7c,%eax,%eax
   80016d:	05 00 00 c0 ee       	add    $0xeec00000,%eax
   800172:	a3 04 20 80 00       	mov    %eax,0x802004
-		return 0;
+ 		return 0;
   800177:	b8 00 00 00 00       	mov    $0x0,%eax
   80017c:	eb 71                	jmp    8001ef <dumbfork+0xca>
 	}

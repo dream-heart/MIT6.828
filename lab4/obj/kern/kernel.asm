@@ -277,7 +277,7 @@ f01001db:	72 a3                	jb     f0100180 <i386_init+0xd8>
 	ENV_CREATE(TEST, ENV_TYPE_USER);
 f01001dd:	c7 44 24 04 00 00 00 	movl   $0x0,0x4(%esp)
 f01001e4:	00 
-f01001e5:	c7 04 24 9b 0b 21 f0 	movl   $0xf0210b9b,(%esp)
+f01001e5:	c7 04 24 75 0e 1a f0 	movl   $0xf01a0e75,(%esp)
 f01001ec:	e8 10 37 00 00       	call   f0103901 <env_create>
 														envs[2].env_status
 														);

@@ -59,7 +59,7 @@ dumbfork(void)
 		// is no longer valid (it refers to the parent!).
 		// Fix it and return 0.
 		thisenv = &envs[ENVX(sys_getenvid())];
-		return 0;
+ 		return 0;
 	}
 
 	// We're the parent.
