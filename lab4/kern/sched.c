@@ -34,20 +34,29 @@ sched_yield(void)
 	int EnvID = 0;
 	int startID = 0;
 	int i=0;
-	if(e != NULL){	
-		EnvID =  e->env_id;
+	bool firstEnv = true;
+	if(e != NULL){
+			
+		EnvID =  e-envs;
 		e->env_status = ENV_RUNNABLE;
+		startID = (EnvID+1) % (NENV-1);
 	}
-	startID = (EnvID+1) % (NENV-1);
+
 	//cprintf("startID = %d, EnvID = %d\n", startID, EnvID);
-	for(i = startID; i != EnvID; i = (i+1)%(NENV-1) ){
-		if(envs[i].env_status == ENV_RUNNABLE)
+	for(i = startID; firstEnv || i != EnvID; i = (i+1)%(NENV) ){
+		if(envs[i].env_status == ENV_RUNNABLE){
+			//envs[i].env_cpunum = cpunum();
 			env_run(&envs[i]);
+		}
+		firstEnv = false;
 	}
 
 	if(e)
 		env_run(e);
+	
 
+
+  
 	// sched_halt never returns
 	sched_halt();
 	}

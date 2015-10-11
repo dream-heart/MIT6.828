@@ -5,11 +5,11 @@
 00800020 T _start
 0080002c t args_exist
 00800040 T umain
-008000c0 T libmain
-0080010f T exit
-00800123 t putch
-00800165 T vcprintf
-008001c6 T cprintf
+008000bf T libmain
+00800107 T exit
+0080011b t putch
+0080015d T vcprintf
+008001be T cprintf
 008001e0 t printnum
 008002cf t sprintputch
 008002ec T printfmt
@@ -49,7 +49,7 @@
 00800eac T _panic
 00800f10 T __udivdi3
 00801040 T __umoddi3
-00801480 r error_string
+00801460 r error_string
 00802000 D binaryname
 00802004 B thisenv
 eec00000 A envs

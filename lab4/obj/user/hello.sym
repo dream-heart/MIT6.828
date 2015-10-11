@@ -4,12 +4,12 @@
 002044dd R __STABSTR_END__
 00800020 T _start
 0080002c t args_exist
-00800034 T umain
-00800060 T libmain
-008000af T exit
-008000c3 t putch
-00800105 T vcprintf
-00800166 T cprintf
+00800033 T umain
+0080005f T libmain
+008000a7 T exit
+008000bb t putch
+008000fd T vcprintf
+0080015e T cprintf
 00800180 t printnum
 0080026f t sprintputch
 0080028c T printfmt
@@ -47,7 +47,7 @@
 00800e08 T _panic
 00800e60 T __udivdi3
 00800f90 T __umoddi3
-00801380 r error_string
+00801360 r error_string
 00802000 D binaryname
 00802004 B thisenv
 eec00000 A envs
