@@ -13,6 +13,7 @@
 #include <kern/picirq.h>
 #include <kern/cpu.h>
 #include <kern/spinlock.h>
+#include <inc/string.h>
 
 static struct Taskstate ts;
 
@@ -386,11 +387,36 @@ page_fault_handler(struct Trapframe *tf)
 	//   (the 'tf' variable points at 'curenv->env_tf').
 
 	// LAB 4: Your code here.
+	if(!curenv->env_pgfault_upcall){
+		// Destroy the environment that caused the fault.
+		cprintf("[%08x] user fault va %08x ip %08x\n",
+			curenv->env_id, fault_va, tf->tf_eip);
+		print_trapframe(tf);
+		env_destroy(curenv);
+	}
+	unsigned int newEsp=0;
+	struct UTrapframe UT;
+	
+	//the Exception has not been built
+	if( tf->tf_esp < UXSTACKTOP-PGSIZE || tf->tf_esp >= UXSTACKTOP) {
+		
+		newEsp = UXSTACKTOP - sizeof(struct UTrapframe);
+	}
+	else
+		//note: it is not like the requirement!!! there is two block
+		newEsp = tf->tf_esp - sizeof(struct UTrapframe) -8;
+	
+	UT.utf_err = tf->tf_err;
+	UT.utf_regs = tf->tf_regs;
+	UT.utf_eflags = tf->tf_eflags;
+	UT.utf_eip = tf->tf_eip;
+	UT.utf_esp = tf->tf_esp;
+	UT.utf_fault_va = fault_va;
 
-	// Destroy the environment that caused the fault.
-	cprintf("[%08x] user fault va %08x ip %08x\n",
-		curenv->env_id, fault_va, tf->tf_eip);
-	print_trapframe(tf);
-	env_destroy(curenv);
+	user_mem_assert(curenv,(void*)newEsp, sizeof(struct UTrapframe),PTE_U|PTE_P|PTE_W );
+	memcpy((void*)newEsp, (&UT) ,sizeof(struct UTrapframe));
+	tf->tf_esp = newEsp;
+	env_run(curenv);
+	
 }
 

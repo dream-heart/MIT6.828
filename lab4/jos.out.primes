@@ -1,5 +1,8 @@
 + ld obj/kern/kernel
 + mk obj/kern/kernel.img
+Could not access KVM kernel module: No such file or directory
+failed to initialize KVM: No such file or directory
+Back to tcg accelerator.
 6828 decimal is XXX octal!
 Physical memory: 66556K available, base = 640K, extended = 65532K
 check_page_alloc() succeeded!
@@ -16,21 +19,5 @@ cpu_id == 2
 SMP: CPU 3 starting
 cpu_id == 3
 [00000000] new env 00001000
-TRAP frame at 0xeffeffbc from CPU 1
-  edi  0xf0290000
-  esi  0x00000000
-  ebp  0x00000000
-  oesp 0xeffeffdc
-  ebx  0x00000000
-  edx  0xf022c094
-  ecx  0x00000002
-  eax  0xefff0000
-  es   0x----0010
-  ds   0x----0010
-  trap 0x0000000d General Protection
-  err  0x00000102
-  eip  0xf0104a85
-  cs   0x----0008
-  flag 0x00000206
-kernel panic on CPU 1 at kern/trap.c:275: unhandled trap in kernel
-qemu: terminating on signal 15 from pid 30451
+[00001000] user panic in <unknown> at lib/fork.c:81: fork not implemented
+qemu: terminating on signal 15 from pid 5198
