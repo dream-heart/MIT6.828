@@ -1,7 +1,7 @@
 00200010 R __STAB_BEGIN__
-00202e90 R __STAB_END__
-00202e91 R __STABSTR_BEGIN__
-002049e0 R __STABSTR_END__
+00202ec0 R __STAB_END__
+00202ec1 R __STABSTR_BEGIN__
+00204a10 R __STABSTR_END__
 00800020 T _start
 0080002c t args_exist
 00800034 T umain
@@ -48,9 +48,9 @@
 00800e06 T memfind
 00800e23 T strtol
 00800ef8 T set_pgfault_handler
-00800f30 T __udivdi3
-00801060 T __umoddi3
-00801460 r error_string
+00800f90 T __udivdi3
+008010c0 T __umoddi3
+008014c0 r error_string
 00802000 D binaryname
 00802004 B thisenv
 00802008 B _pgfault_handler

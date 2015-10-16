@@ -394,6 +394,9 @@ page_fault_handler(struct Trapframe *tf)
 		print_trapframe(tf);
 		env_destroy(curenv);
 	}
+
+	user_mem_assert(curenv, (void*)(UXSTACKTOP-PGSIZE), PGSIZE, PTE_U|PTE_W|PTE_P);
+
 	unsigned int newEsp=0;
 	struct UTrapframe UT;
 	

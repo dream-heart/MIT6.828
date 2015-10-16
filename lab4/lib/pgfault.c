@@ -29,17 +29,17 @@ set_pgfault_handler(void (*handler)(struct UTrapframe *utf))
 	if (_pgfault_handler == 0) {
 		// First time through!
 		// LAB 4: Your code here.
-		struct PageInfo *page = page_alloc(1);
-		if(page == 0)
-			panic("No Memory for the UxStack\n");
-		r = page_insert(curenv->env_pgdir, page, (void*)(UXSTACKTOP-PGSIZE),PTE_U|PTE_W|PTE_P);
-		if(r < 0)
-			panic("No memory for the UxStack");
+		void* addr = (void*) (UXSTACKTOP-PGSIZE);
+		r=sys_page_alloc(thisenv->env_id, addr, PTE_W|PTE_U|PTE_P);
+		if( r < 0)
+			panic("No memory for the UxStack, the mistake is %d\n",r);
 		//panic("set_pgfault_handler not implemented");
 	}
 
 	// Save handler pointer for assembly to call.
 	_pgfault_handler = handler;
-	
+	if(( r= sys_env_set_pgfault_upcall(sys_getenvid(), _pgfault_upcall))<0)
+		panic("sys_env_set_pgfault_upcall is not right %d\n", r);
+
 
 }

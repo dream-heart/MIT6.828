@@ -180,6 +180,7 @@ sys_page_alloc(envid_t envid, void *va, int perm)
 	//   allocated!
 
 	// LAB 4: Your code here.
+	
 	struct Env *e =0;
 	int r =0;
 	if((r = envid2env(envid, &e, 1)) < 0)
@@ -200,7 +201,28 @@ sys_page_alloc(envid_t envid, void *va, int perm)
 	}
 	return 0;
 
+	/*
+	struct Env *e; 
+	int ret = envid2env(envid, &e, 1);
+	if (ret) return ret;	//bad_env
+	// cprintf("good\n");
+	if (va >= (void*)UTOP) return -E_INVAL;
+	int flag = PTE_U|PTE_P;
+	if ((perm & flag) != flag) return -E_INVAL;
+	// cprintf("good\n");
+	struct PageInfo *pg = page_alloc(1);//init to zero
+	if (!pg) return -E_NO_MEM;
+	// cprintf("good\n");
+	pg->pp_ref++;
+	ret = page_insert(e->env_pgdir, pg, va, perm);
+	if (ret) {
+		page_free(pg);
+		return ret;
+	}
 
+	return 0;
+
+*/
 	//panic("sys_page_alloc not implemented");
 	
 }
@@ -381,6 +403,10 @@ syscall(uint32_t syscallno, uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4, 
 						break;
 		case SYS_page_unmap:	ret = sys_page_unmap(a1, (void*) a2);
 						break;
+		case SYS_env_set_pgfault_upcall:
+								ret = sys_env_set_pgfault_upcall(a1, (void*)a2);
+						break;
+
 		default:
 			return -E_NO_SYS;
 	}
