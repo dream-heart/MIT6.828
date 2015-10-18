@@ -13,7 +13,7 @@ handler(struct UTrapframe *utf)
 
 void
 umain(int argc, char **argv)
-{
+{	//cprintf("the user_eid = %d\n", sys_getenvid());
 	set_pgfault_handler(handler);
 	*(int*)0xDeadBeef = 0;
 }

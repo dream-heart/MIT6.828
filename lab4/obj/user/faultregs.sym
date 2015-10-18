@@ -52,7 +52,7 @@
 00801494 T _pgfault_upcall
 008014e0 T __udivdi3
 00801610 T __umoddi3
-00801b00 r error_string
+00801ae0 r error_string
 00802000 D binaryname
 00802020 b before
 00802060 b after

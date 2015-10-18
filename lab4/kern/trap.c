@@ -394,7 +394,10 @@ page_fault_handler(struct Trapframe *tf)
 		print_trapframe(tf);
 		env_destroy(curenv);
 	}
+	/************debug code*
+	cprintf("the curenv->eid =  %d\n",curenv->env_id );
 
+	*******debug code*******/
 	user_mem_assert(curenv, (void*)(UXSTACKTOP-PGSIZE), PGSIZE, PTE_U|PTE_W|PTE_P);
 
 	unsigned int newEsp=0;
@@ -419,6 +422,7 @@ page_fault_handler(struct Trapframe *tf)
 	user_mem_assert(curenv,(void*)newEsp, sizeof(struct UTrapframe),PTE_U|PTE_P|PTE_W );
 	memcpy((void*)newEsp, (&UT) ,sizeof(struct UTrapframe));
 	tf->tf_esp = newEsp;
+	tf->tf_eip = (uintptr_t)curenv->env_pgfault_upcall;
 	env_run(curenv);
 	
 }

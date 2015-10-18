@@ -48,7 +48,7 @@
 00800eac T _panic
 00800f10 T __udivdi3
 00801040 T __umoddi3
-00801460 r error_string
+00801440 r error_string
 00802000 D binaryname
 00802004 B thisenv
 eec00000 A envs

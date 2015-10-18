@@ -50,7 +50,7 @@
 00800ef8 T set_pgfault_handler
 00800f90 T __udivdi3
 008010c0 T __umoddi3
-008014c0 r error_string
+008014a0 r error_string
 00802000 D binaryname
 00802004 B thisenv
 00802008 B _pgfault_handler

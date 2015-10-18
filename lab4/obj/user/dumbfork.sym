@@ -50,10 +50,10 @@
 0080103f T sys_ipc_recv
 008010a0 T __udivdi3
 008011d0 T __umoddi3
-00801640 r error_string
+00801620 r error_string
 00802000 D binaryname
 00802004 B thisenv
-00802008 A end
+00802008 B end
 eec00000 A envs
 ef000000 A pages
 ef400000 A uvpt

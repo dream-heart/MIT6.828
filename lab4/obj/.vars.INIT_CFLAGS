@@ -1,1 +1,1 @@
--DTEST=user_faultdie
+-DTEST=user_faultallocbad

@@ -48,7 +48,7 @@
 00800eff T sys_ipc_recv
 00800f60 T __udivdi3
 00801090 T __umoddi3
-00801540 r error_string
+00801520 r error_string
 00802000 D binaryname
 00802020 B bigarray
 00c02020 B thisenv

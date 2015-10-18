@@ -48,7 +48,7 @@
 00800dd3 T strtol
 00800eb0 T __udivdi3
 00800fe0 T __umoddi3
-008013e0 r error_string
+008013c0 r error_string
 00802000 D binaryname
 00802004 B thisenv
 eec00000 A envs

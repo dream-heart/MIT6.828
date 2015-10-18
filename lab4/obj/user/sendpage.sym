@@ -53,7 +53,7 @@
 008010ac T _panic
 00801110 T __udivdi3
 00801240 T __umoddi3
-008016a0 r error_string
+00801680 r error_string
 00802000 D str2
 00802004 D str1
 00802008 D binaryname

@@ -50,7 +50,7 @@
 00800f10 T _panic
 00800f70 T __udivdi3
 008010a0 T __umoddi3
-008014e0 r error_string
+008014c0 r error_string
 00802000 D binaryname
 00802004 B thisenv
 eec00000 A envs

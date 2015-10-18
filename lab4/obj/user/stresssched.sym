@@ -50,7 +50,7 @@
 00800f9e T sfork
 00800fc0 T __udivdi3
 008010f0 T __umoddi3
-00801520 r error_string
+00801500 r error_string
 00802000 D binaryname
 00802004 B counter
 00802008 B thisenv

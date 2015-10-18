@@ -51,7 +51,7 @@
 00800fd4 T _pgfault_upcall
 00801020 T __udivdi3
 00801150 T __umoddi3
-008015a0 r error_string
+00801580 r error_string
 00802000 D binaryname
 00802004 B thisenv
 00802008 B _pgfault_handler

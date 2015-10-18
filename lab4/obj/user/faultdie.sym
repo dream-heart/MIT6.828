@@ -51,7 +51,7 @@
 00800f74 T _panic
 00800fd0 T __udivdi3
 00801100 T __umoddi3
-008014c0 r error_string
+008014a0 r error_string
 00802000 D binaryname
 00802004 B thisenv
 00802008 B _pgfault_handler

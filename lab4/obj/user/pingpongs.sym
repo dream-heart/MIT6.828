@@ -53,7 +53,7 @@
 0080100c T _panic
 00801070 T __udivdi3
 008011a0 T __umoddi3
-008015a0 r error_string
+00801580 r error_string
 00802000 D binaryname
 00802004 B val
 00802008 B thisenv
