@@ -86,7 +86,6 @@ sys_exofork(void)
 	// will appear to return 0.
 
 	// LAB 4: Your code here.
-	
 	struct Env* childEnv=0;
 	struct Env* parentEnv = curenv;
 	int r = env_alloc(&childEnv, parentEnv->env_id);
@@ -98,7 +97,8 @@ sys_exofork(void)
 	
 	childEnv->env_tf.tf_regs.reg_eax = 0;
 	return childEnv->env_id;
-
+	
+	
 
 
 }

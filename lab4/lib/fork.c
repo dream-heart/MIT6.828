@@ -52,10 +52,29 @@ static int
 duppage(envid_t envid, unsigned pn)
 {
 	int r;
+	struct Env *childEnv =0;
+	struct Env* pEnv = curenv;
+	if((r = envid2env(envid, &childEnv, 1)) < 0)
+		return r;
+
+	pte_t * PTE=0;
+	struct PageInfo * page = page_lookup(pEnv->env_pgdir, (void*)(pn*PGSIZE),&PTE);
+
+	r = ((*PTE) & PTE_W) || ((*PTE) & PTE_COW);
+	if(!r)
+		return 0;
+	r = (*PTE) & PTE_P;
+	if(page == NULL || (!r) )	//va not mapped
+		return 0;
+	if( (	r =page_insert(childEnv->env_pgdir, page, (void *)(pn*PGSIZE), PTE_COW|PTE_U|PTE_P))
+						<0)  
+		return r;
+
+	return 0;
 
 	// LAB 4: Your code here.
-	panic("duppage not implemented");
-	return 0;
+	//panic("duppage not implemented");
+	//return 0;
 }
 
 //
@@ -78,7 +97,32 @@ envid_t
 fork(void)
 {
 	// LAB 4: Your code here.
-	panic("fork not implemented");
+	int r = sys_env_set_pgfault_upcall(curenv->env_id, pgfault);
+	if(r < 0)
+		panic("sys_env_set_pgfault_upcall is not right ,and the errno is %d\n", r);
+
+	int childEid = sys_exofork();
+	if(childEid < 0)
+		panic("sys_exofork() is not right, and the errno is  %d\n" childEid);
+	int pn =0;
+	for(pn=0; pn*PGSIZE < UTOP ; pn++){
+		if(pn*PGSIZE == UXSTACKTOP -PGSIZE){
+			struct Env *childEnv =0;
+			if((r = envid2env(childEid, &childEnv, 1)) < 0)
+				panic("envid2env is wrong, the errno is %d\n", r);
+			struct PageInfo* page = page_alloc(1);
+			if(page == 0)
+				panic("there is no memory for the child exception stack\n");
+			if( (r =page_insert(childEnv->env_pgdir, page, (void *)(pn*PGSIZE), PTE_W|PTE_U|PTE_P))<0 )
+				panic("fork page_insert is wrong, the errno is %d\n", r);
+		}
+		else
+			r = duppage(childEid, pn);
+		if(r <0)
+			panic("fork() is wrong, and the errno is %d\n", r) );
+	}
+
+	//panic("fork not implemented");
 }
 
 // Challenge!
