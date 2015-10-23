@@ -25,6 +25,12 @@ pgfault(struct UTrapframe *utf)
 	//   (see <inc/memlayout.h>).
 
 	// LAB 4: Your code here.
+	if( (err & FEC_WR) == 0)
+		 panic("The err is not right of the pgfault\n");
+	pte_t PTE =uvpt[PGNUM(addr)];
+
+	if( (PTE & PTE_COW) == 0)
+		panic("The pgfault perm is not right\n");
 
 	// Allocate a new page, map it at a temporary location (PFTEMP),
 	// copy the data from the old page to the new page, then move the new
@@ -33,8 +39,21 @@ pgfault(struct UTrapframe *utf)
 	//   You should make three system calls.
 
 	// LAB 4: Your code here.
+	if(sys_page_alloc(sys_getenvid(), (void*)PFTEMP, PTE_U|PTE_W|PTE_P) <0 )
+		panic("pgfault sys_page_alloc is not right\n");
+	addr = ROUNDDOWN(addr, PGSIZE);
+	memcpy((void*)PFTEMP, addr, PGSIZE);
 
-	panic("pgfault not implemented");
+	if((r = sys_page_map(sys_getenvid(), (void*)PFTEMP, sys_getenvid(), addr, PTE_U|PTE_W|PTE_P)) < 0)
+		panic("The sys_page_map is not right, the errno is %d\n", r);
+	if( (r = sys_page_unmap(sys_getenvid(), (void*)PFTEMP)) <0 )
+		panic("The sys_page_unmap is not right, the errno is %d\n",r);
+	return;
+
+
+
+
+	//panic("pgfault not implemented");
 }
 
 //
@@ -52,26 +71,22 @@ static int
 duppage(envid_t envid, unsigned pn)
 {
 	int r;
-	struct Env *childEnv =0;
-	struct Env* pEnv = curenv;
-	if((r = envid2env(envid, &childEnv, 1)) < 0)
+	
+
+	pte_t  PTE= uvpt[PGNUM(pn*PGSIZE)];
+	int perm = PTE_U|PTE_P;
+	if((PTE & PTE_W) || (PTE & PTE_COW))
+		perm |= PTE_COW;
+	
+	if( (	r =sys_page_map(sys_getenvid(), (void*)(pn*PGSIZE), envid, (void*)(pn*PGSIZE), perm)) 
+						<0)  
 		return r;
 
-	pte_t * PTE=0;
-	struct PageInfo * page = page_lookup(pEnv->env_pgdir, (void*)(pn*PGSIZE),&PTE);
-
-	r = ((*PTE) & PTE_W) || ((*PTE) & PTE_COW);
-	if(!r)
-		return 0;
-	r = (*PTE) & PTE_P;
-	if(page == NULL || (!r) )	//va not mapped
-		return 0;
-	if( (	r =page_insert(childEnv->env_pgdir, page, (void *)(pn*PGSIZE), PTE_COW|PTE_U|PTE_P))
+	if( (	r =sys_page_map(sys_getenvid(), (void*)(pn*PGSIZE), sys_getenvid(), (void*)(pn*PGSIZE), perm)) 
 						<0)  
 		return r;
 
 	return 0;
-
 	// LAB 4: Your code here.
 	//panic("duppage not implemented");
 	//return 0;
@@ -97,32 +112,42 @@ envid_t
 fork(void)
 {
 	// LAB 4: Your code here.
-	int r = sys_env_set_pgfault_upcall(curenv->env_id, pgfault);
-	if(r < 0)
-		panic("sys_env_set_pgfault_upcall is not right ,and the errno is %d\n", r);
+	
+	extern void*  _pgfault_upcall();
+	//build the experition stack for the parent env
+	set_pgfault_handler(pgfault);
 
 	int childEid = sys_exofork();
 	if(childEid < 0)
-		panic("sys_exofork() is not right, and the errno is  %d\n" childEid);
-	int pn =0;
-	for(pn=0; pn*PGSIZE < UTOP ; pn++){
-		if(pn*PGSIZE == UXSTACKTOP -PGSIZE){
-			struct Env *childEnv =0;
-			if((r = envid2env(childEid, &childEnv, 1)) < 0)
-				panic("envid2env is wrong, the errno is %d\n", r);
-			struct PageInfo* page = page_alloc(1);
-			if(page == 0)
-				panic("there is no memory for the child exception stack\n");
-			if( (r =page_insert(childEnv->env_pgdir, page, (void *)(pn*PGSIZE), PTE_W|PTE_U|PTE_P))<0 )
-				panic("fork page_insert is wrong, the errno is %d\n", r);
-		}
-		else
-			r = duppage(childEid, pn);
-		if(r <0)
-			panic("fork() is wrong, and the errno is %d\n", r) );
+		panic("sys_exofork() is not right, and the errno is  %d\n",childEid);
+	if(childEid == 0){
+		thisenv = &envs[ENVX(sys_getenvid())];
+		return childEid;
 	}
 
-	//panic("fork not implemented");
+	int r = sys_env_set_pgfault_upcall(childEid,  _pgfault_upcall);
+	if(r < 0)
+		panic("sys_env_set_pgfault_upcall is not right ,and the errno is %d\n", r);
+	
+
+	int pn =0;
+	for(pn=0; pn*PGSIZE < UTOP ; pn++){
+		if ( ( 	(uvpd[PDX(pn*PGSIZE)] & PTE_P) != 0) &&
+				( (uvpt[PGNUM(pn*PGSIZE)] & PTE_U) != 0) &&
+				( (uvpt[PGNUM(pn*PGSIZE)] & PTE_P) != 0))
+		{
+		//build experition stack for the child env
+			if(pn*PGSIZE == UXSTACKTOP -PGSIZE)
+				sys_page_alloc(childEid, (void*) (pn*PGSIZE), PTE_U| PTE_W | PTE_P);
+			else
+				r = duppage(childEid, pn);
+			if(r <0)
+				panic("fork() is wrong, and the errno is %d\n", r) ;
+		}
+	}
+	if (sys_env_set_status(childEid, ENV_RUNNABLE) < 0)
+		panic("sys_env_set_status");
+	return childEid;
 }
 
 // Challenge!

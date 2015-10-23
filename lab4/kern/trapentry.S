@@ -21,6 +21,7 @@
  *   void NAME();
  * where NAME is the argument passed to TRAPHANDLER.
  */
+
 #define TRAPHANDLER(name, num)						\
 	.globl name;		/* define global symbol for 'name' */	\
 	.type name, @function;	/* symbol type is function */		\
@@ -69,7 +70,21 @@ TRAPHANDLER_NOEC(handler18, T_MCHK)
 TRAPHANDLER_NOEC(handler19, T_SIMDERR)
 
 TRAPHANDLER_NOEC(handler_syscall, T_SYSCALL)
+
+/*
+* lab4
+*/
 	
+TRAPHANDLER_NOEC(handlerIRQ0, IRQ_OFFSET+IRQ_TIMER)
+TRAPHANDLER_NOEC(handlerIRQ1, IRQ_OFFSET+IRQ_KBD)
+TRAPHANDLER_NOEC(handlerIRQ4, IRQ_OFFSET+IRQ_SERIAL)
+TRAPHANDLER_NOEC(handlerIRQ7, IRQ_OFFSET+IRQ_SPURIOUS)
+TRAPHANDLER_NOEC(handlerIRQ14, IRQ_OFFSET+IRQ_IDE)
+TRAPHANDLER_NOEC(handlerIRQ19, IRQ_OFFSET+IRQ_ERROR)
+
+
+
+
 /*
  * Lab 3: Your code here for _alltraps
  */

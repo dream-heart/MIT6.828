@@ -95,7 +95,14 @@ trap_init(void)
     void handler19();
 
     void handler_syscall();
-
+    //LAB4
+    void handlerIRQ0();
+    void handlerIRQ1();
+    void handlerIRQ4();
+    void handlerIRQ7();
+    void handlerIRQ14();
+    void handlerIRQ19();
+ 
 
     SETGATE(idt[0], 0, GD_KT, handler0, 0);
     SETGATE(idt[1], 0, GD_KT, handler1, 0);
@@ -119,6 +126,14 @@ trap_init(void)
     SETGATE(idt[19], 0, GD_KT, handler19, 0);
 
     SETGATE(idt[T_SYSCALL], 0, GD_KT, handler_syscall, 3);
+
+    //lab4
+    SETGATE(idt[IRQ_OFFSET+IRQ_TIMER], 	0, GD_KT, handlerIRQ0, 0);
+    SETGATE(idt[IRQ_OFFSET+IRQ_KBD], 	0, GD_KT, handlerIRQ1, 0);
+    SETGATE(idt[IRQ_OFFSET+IRQ_SERIAL], 0, GD_KT, handlerIRQ4, 0);
+    SETGATE(idt[IRQ_OFFSET+IRQ_SPURIOUS], 0, GD_KT, handlerIRQ7, 0);
+    SETGATE(idt[IRQ_OFFSET+IRQ_IDE], 	0, GD_KT, handlerIRQ14, 0);
+    SETGATE(idt[IRQ_OFFSET+IRQ_ERROR], 	0, GD_KT, handlerIRQ19, 0);
 
 
 
@@ -164,7 +179,9 @@ trap_init_percpu(void)
 	gdt[(GD_TSS0 >> 3) + cpu_id].sd_s = 0;
 	ltr(GD_TSS0 + 8*cpu_id);
 	lidt(&idt_pd);
-	
+
+
+
 	
 	/*
 	// Setup a TSS so that we get the right stack
@@ -269,6 +286,11 @@ trap_dispatch(struct Trapframe *tf)
 	// Handle clock interrupts. Don't forget to acknowledge the
 	// interrupt using lapic_eoi() before calling the scheduler!
 	// LAB 4: Your code here.
+	if(tf->tf_trapno == IRQ_TIMER + IRQ_OFFSET){
+		lapic_eoi();
+		sched_yield();
+		return;
+	}
 
 	// Unexpected trap: The user process or the kernel has a bug.
 	print_trapframe(tf);
@@ -398,7 +420,6 @@ page_fault_handler(struct Trapframe *tf)
 	cprintf("the curenv->eid =  %d\n",curenv->env_id );
 
 	*******debug code*******/
-	user_mem_assert(curenv, (void*)(UXSTACKTOP-PGSIZE), PGSIZE, PTE_U|PTE_W|PTE_P);
 
 	unsigned int newEsp=0;
 	struct UTrapframe UT;
@@ -412,6 +433,8 @@ page_fault_handler(struct Trapframe *tf)
 		//note: it is not like the requirement!!! there is two block
 		newEsp = tf->tf_esp - sizeof(struct UTrapframe) -8;
 	
+	user_mem_assert(curenv, (void*)newEsp, 0, PTE_U|PTE_W|PTE_P);
+
 	UT.utf_err = tf->tf_err;
 	UT.utf_regs = tf->tf_regs;
 	UT.utf_eflags = tf->tf_eflags;
