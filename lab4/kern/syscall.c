@@ -1,5 +1,3 @@
-/* See COPYRIGHT for copyright information. */
-
 #include <inc/x86.h>
 #include <inc/error.h>
 #include <inc/string.h>
@@ -201,28 +199,7 @@ sys_page_alloc(envid_t envid, void *va, int perm)
 	}
 	return 0;
 
-	/*
-	struct Env *e; 
-	int ret = envid2env(envid, &e, 1);
-	if (ret) return ret;	//bad_env
-	// cprintf("good\n");
-	if (va >= (void*)UTOP) return -E_INVAL;
-	int flag = PTE_U|PTE_P;
-	if ((perm & flag) != flag) return -E_INVAL;
-	// cprintf("good\n");
-	struct PageInfo *pg = page_alloc(1);//init to zero
-	if (!pg) return -E_NO_MEM;
-	// cprintf("good\n");
-	pg->pp_ref++;
-	ret = page_insert(e->env_pgdir, pg, va, perm);
-	if (ret) {
-		page_free(pg);
-		return ret;
-	}
 
-	return 0;
-
-*/
 	//panic("sys_page_alloc not implemented");
 	
 }
@@ -350,7 +327,46 @@ static int
 sys_ipc_try_send(envid_t envid, uint32_t value, void *srcva, unsigned perm)
 {
 	// LAB 4: Your code here.
-	panic("sys_ipc_try_send not implemented");
+	struct Env *env=0;
+	int r =0;
+	pte_t * pte =0;
+	if((r = envid2env(envid, &env, 0)) < 0)
+		return -E_BAD_ENV;
+
+	if(env->env_ipc_recving == 0)
+		return -E_IPC_NOT_RECV;
+	// send the val
+	env->env_ipc_value = value;
+	env->env_ipc_from = curenv->env_id;
+	env->env_ipc_perm = perm;
+
+	if((int)srcva < UTOP){
+
+		if ( (int)srcva < UTOP &&  ((int)srcva % PGSIZE != 0) )
+			return -E_INVAL;
+		if(  (perm & (~PTE_SYSCALL) ) !=0 )
+			return  -E_INVAL;
+		if(  (perm & PTE_P) ==0 )
+			return  -E_INVAL;
+
+		struct PageInfo *page  = page_lookup(curenv->env_pgdir, srcva, &pte);
+		if( (perm & PTE_W) && ( (*pte & PTE_W) == 0) )
+			return  -E_INVAL;
+		if((int)env->env_ipc_dstva >= UTOP)
+			return 0;
+		r = page_insert(env->env_pgdir, page, env->env_ipc_dstva ,perm);
+		if(r < 0)
+			return -E_NO_MEM;
+		
+	}
+
+	env->env_status = ENV_RUNNABLE;
+	env->env_ipc_recving = 0;
+	
+
+	return 0;
+	//panic("sys_ipc_try_send not implemented");
+
 }
 
 // Block until a value is ready.  Record that you want to receive
@@ -368,8 +384,22 @@ static int
 sys_ipc_recv(void *dstva)
 {
 	// LAB 4: Your code here.
-	panic("sys_ipc_recv not implemented");
+	//panic("sys_ipc_recv not implemented");
+	
+	if((int)dstva >= UTOP)
+		curenv->env_ipc_dstva = (void*)UTOP;
+	else{
+		if((int)dstva % PGSIZE != 0)
+			return -E_INVAL;
+		else curenv->env_ipc_dstva = dstva;
+	}
+
+	curenv->env_ipc_recving = 1;
+	curenv->env_status = ENV_NOT_RUNNABLE;
+	//sched_yield();
 	return 0;
+	
+
 }
 
 // Dispatches to the correct kernel function, passing the arguments.
@@ -404,7 +434,13 @@ syscall(uint32_t syscallno, uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4, 
 		case SYS_page_unmap:	ret = sys_page_unmap(a1, (void*) a2);
 						break;
 		case SYS_env_set_pgfault_upcall:
-								ret = sys_env_set_pgfault_upcall(a1, (void*)a2);
+					ret = sys_env_set_pgfault_upcall(a1, (void*)a2);
+						break;
+		case SYS_ipc_try_send:
+					ret = sys_ipc_try_send(a1, a2, (void*)a3, a4);
+						break;
+		case  SYS_ipc_recv:	
+					ret = sys_ipc_recv ( (void *)a1);
 						break;
 
 		default:
@@ -412,4 +448,3 @@ syscall(uint32_t syscallno, uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4, 
 	}
 	return ret;
 }
-

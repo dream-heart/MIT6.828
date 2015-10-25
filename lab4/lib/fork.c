@@ -14,6 +14,8 @@
 static void
 pgfault(struct UTrapframe *utf)
 {
+
+
 	void *addr = (void *) utf->utf_fault_va;
 	uint32_t err = utf->utf_err;
 	int r;
@@ -25,8 +27,14 @@ pgfault(struct UTrapframe *utf)
 	//   (see <inc/memlayout.h>).
 
 	// LAB 4: Your code here.
-	if( (err & FEC_WR) == 0)
-		 panic("The err is not right of the pgfault\n");
+	if( (err & FEC_WR) == 0){
+		//cprintf(	" The eid = %x\n", sys_getenvid());
+		//cprintf("The err is %d\n", err);
+		cprintf("The va is 0x%x\n", (int)addr );
+
+		 panic("The err is not right of the pgfault\n ");
+	}
+
 	pte_t PTE =uvpt[PGNUM(addr)];
 
 	if( (PTE & PTE_COW) == 0)
@@ -50,8 +58,7 @@ pgfault(struct UTrapframe *utf)
 		panic("The sys_page_unmap is not right, the errno is %d\n",r);
 	return;
 
-
-
+	
 
 	//panic("pgfault not implemented");
 }
