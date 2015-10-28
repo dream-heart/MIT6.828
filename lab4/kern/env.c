@@ -90,6 +90,10 @@ envid2env(envid_t envid, struct Env **env_store, bool checkperm)
 	// that used the same slot in the envs[] array).
 	e = &envs[ENVX(envid)];
 	if (e->env_status == ENV_FREE || e->env_id != envid) {
+		// debug code
+		//cprintf("the e->env_id =0x%x,  envid = 0x%x \n", e->env_id, envid);
+		//cprintf("debug code\n\n");
+
 		*env_store = 0;
 		return -E_BAD_ENV;
 	}
@@ -263,12 +267,14 @@ env_alloc(struct Env **newenv_store, envid_t parent_id)
 
 	// Enable interrupts while in user mode.
 	// LAB 4: Your code here.
+	// time clock
 	e->env_tf.tf_eflags |= FL_IF;
+	
 	// Clear the page fault handler until user installs one.
 	e->env_pgfault_upcall = 0;
 
 	// Also clear the IPC receiving flag.
-	e->env_ipc_recving = 0;
+	//e->env_ipc_recving = 0;
 
 	// commit the allocation
 	env_free_list = e->env_link;
@@ -557,7 +563,7 @@ env_run(struct Env *e)
 	curenv = e;
 	curenv->env_status = ENV_RUNNING;
 	curenv->env_runs++;
-	cprintf("the eip is %x\n", curenv->env_id);
+//	cprintf("the eip is %x\n", curenv->env_id);
 	lcr3( PADDR(curenv->env_pgdir) );
 	unlock_kernel();
 	env_pop_tf(& (curenv->env_tf) );

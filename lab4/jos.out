@@ -1,5 +1,8 @@
 + ld obj/kern/kernel
 + mk obj/kern/kernel.img
+Could not access KVM kernel module: No such file or directory
+failed to initialize KVM: No such file or directory
+Back to tcg accelerator.
 6828 decimal is XXX octal!
 Physical memory: 66556K available, base = 640K, extended = 65532K
 check_page_alloc() succeeded!
@@ -18,26 +21,5 @@ cpu_id == 3
 [00000000] new env 00001000
 [00001000] new env 00001001
 CPU 0: 2 [00001001] new env 00001002
-CPU 0: 3 [00001002] new env 00001003
-CPU 3: 0 [00001003] new env 00001004
-TRAP frame at 0xf0295174 from CPU 1
-  edi  0x00001004
-  esi  0xeebfdf94
-  ebp  0xeebfdfb0
-  oesp 0xeffeffdc
-  ebx  0x00000000
-  edx  0x00000000
-  ecx  0x00000005
-  eax  0x00000005
-  es   0x----0023
-  ds   0x----0023
-  trap 0x00000000 Divide error
-  err  0x00000000
-  eip  0x008000c2
-  cs   0x----001b
-  flag 0x00000282
-  esp  0xeebfdf78
-  ss   0x----0023
-[00001003] free env 00001003
-[00001002] user panic in <unknown> at lib/ipc.c:76: ipc_send is error
-qemu: terminating on signal 15 from pid 5980
+[00001002] user panic in <unknown> at lib/syscall.c:35: syscall 12 returned 12 (> 0)
+qemu: terminating on signal 15 from pid 12672

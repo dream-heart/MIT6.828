@@ -31,6 +31,7 @@ pgfault(struct UTrapframe *utf)
 		//cprintf(	" The eid = %x\n", sys_getenvid());
 		//cprintf("The err is %d\n", err);
 		cprintf("The va is 0x%x\n", (int)addr );
+		cprintf("The Eip is 0x%x\n", utf->utf_eip);
 
 		 panic("The err is not right of the pgfault\n ");
 	}

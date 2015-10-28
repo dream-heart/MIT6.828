@@ -35,30 +35,56 @@ sched_yield(void)
 	int i=0;
 	bool firstEnv = true;
 	if(e != NULL){
-			
+		
 		EnvID =  e-envs;
-		e->env_status = ENV_RUNNABLE;
+		// maybe the env status is ENV_NOTRUNNABLE  so next if is important
+		if(e->env_status == ENV_RUNNING)
+			e->env_status = ENV_RUNNABLE;
 		startID = (EnvID+1) % (NENV-1);
 	}
 
 	//cprintf("startID = %d, EnvID = %d\n", startID, EnvID);
 	for(i = startID; firstEnv || i != EnvID; i = (i+1)%(NENV) ){
 		if(envs[i].env_status == ENV_RUNNABLE){
-			//envs[i].env_cpunum = cpunum();
 			env_run(&envs[i]);
 		}
 		firstEnv = false;
 	}
 
-	if(e)
+	if(e )
+	//&& e->env_status == ENV_RUNNING)
+		
 		env_run(e);
-	
-
-
   
 	// sched_halt never returns
 	sched_halt();
-	}
+	
+	
+	/*
+	 idle = thiscpu->cpu_env;
+    uint32_t start = (idle != NULL) ? ENVX( idle->env_id) : 0;
+    uint32_t i = start;
+    bool first = true;
+
+    for (; i != start || first; i = (i+1) % NENV, first = false)
+    {
+        if(envs[i].env_status == ENV_RUNNABLE)
+        {
+            env_run(&envs[i]);
+            return ;
+        }
+    }
+
+    if (idle && idle->env_status == ENV_RUNNING)
+    {
+        env_run(idle);
+        return ;
+    }
+
+	// sched_halt never returns
+	sched_halt();
+	*/
+}
 
 
 // Halt this CPU when there is nothing to do. Wait until the

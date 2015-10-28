@@ -326,47 +326,58 @@ sys_page_unmap(envid_t envid, void *va)
 static int
 sys_ipc_try_send(envid_t envid, uint32_t value, void *srcva, unsigned perm)
 {
+	
 	// LAB 4: Your code here.
+
+	//if(envid == 0x1004)
+	//	cprintf("when the envid =0x1004, the value is %d\n", value);
 	struct Env *env=0;
 	int r =0;
 	pte_t * pte =0;
 	if((r = envid2env(envid, &env, 0)) < 0)
 		return -E_BAD_ENV;
-
+	
+	
 	if(env->env_ipc_recving == 0)
 		return -E_IPC_NOT_RECV;
-	// send the val
-	env->env_ipc_value = value;
-	env->env_ipc_from = curenv->env_id;
-	env->env_ipc_perm = perm;
+	
 
 	if((int)srcva < UTOP){
 
 		if ( (int)srcva < UTOP &&  ((int)srcva % PGSIZE != 0) )
 			return -E_INVAL;
+			
 		if(  (perm & (~PTE_SYSCALL) ) !=0 )
 			return  -E_INVAL;
+			
 		if(  (perm & PTE_P) ==0 )
 			return  -E_INVAL;
-
+			
 		struct PageInfo *page  = page_lookup(curenv->env_pgdir, srcva, &pte);
 		if( (perm & PTE_W) && ( (*pte & PTE_W) == 0) )
 			return  -E_INVAL;
+			
 		if((int)env->env_ipc_dstva >= UTOP)
 			return 0;
 		r = page_insert(env->env_pgdir, page, env->env_ipc_dstva ,perm);
 		if(r < 0)
 			return -E_NO_MEM;
+			
 		
 	}
 
-	env->env_status = ENV_RUNNABLE;
+	env->env_ipc_value = value;
+	env->env_ipc_from = curenv->env_id;
+	env->env_ipc_perm = perm;
 	env->env_ipc_recving = 0;
-	
+	env->env_status = ENV_RUNNABLE;
+	env->env_tf.tf_regs.reg_eax = 0;
 
 	return 0;
 	//panic("sys_ipc_try_send not implemented");
 
+
+	
 }
 
 // Block until a value is ready.  Record that you want to receive
@@ -385,7 +396,7 @@ sys_ipc_recv(void *dstva)
 {
 	// LAB 4: Your code here.
 	//panic("sys_ipc_recv not implemented");
-	
+
 	if((int)dstva >= UTOP)
 		curenv->env_ipc_dstva = (void*)UTOP;
 	else{
@@ -393,11 +404,14 @@ sys_ipc_recv(void *dstva)
 			return -E_INVAL;
 		else curenv->env_ipc_dstva = dstva;
 	}
-
-	curenv->env_ipc_recving = 1;
+	
 	curenv->env_status = ENV_NOT_RUNNABLE;
-	//sched_yield();
+	curenv->env_ipc_recving = 1;
+	sys_yield();
+
 	return 0;
+
+
 	
 
 }
