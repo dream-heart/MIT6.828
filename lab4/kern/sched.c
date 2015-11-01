@@ -38,8 +38,8 @@ sched_yield(void)
 		
 		EnvID =  e-envs;
 		// maybe the env status is ENV_NOTRUNNABLE  so next if is important
-		if(e->env_status == ENV_RUNNING)
-			e->env_status = ENV_RUNNABLE;
+		if(e->env_status ==ENV_RUNNING )
+		e->env_status = ENV_RUNNABLE;
 		startID = (EnvID+1) % (NENV-1);
 	}
 
@@ -51,8 +51,7 @@ sched_yield(void)
 		firstEnv = false;
 	}
 
-	if(e )
-	//&& e->env_status == ENV_RUNNING)
+	if(e && e->env_status == ENV_RUNNING)
 		
 		env_run(e);
   
