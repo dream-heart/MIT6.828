@@ -28,8 +28,33 @@ sched_yield(void)
 	// no runnable environments, simply drop through to the code
 	// below to halt the cpu.
 
-	// LAB 4: Your code here.
+	// LAB : Your code here.
+struct Env *e = thiscpu->cpu_env;
+	int EnvID = 0;
+	int startID = 0;
+	int i=0;
+	bool firstEnv = true;
+	if(e != NULL){
+		
+		EnvID =  e-envs;
+		// maybe the env status is ENV_NOTRUNNABLE  so next if is important
+		if(e->env_status ==ENV_RUNNING )
+		e->env_status = ENV_RUNNABLE;
+		startID = (EnvID+1) % (NENV-1);
+	}
 
+	//cprintf("startID = %d, EnvID = %d\n", startID, EnvID);
+	for(i = startID; firstEnv || i != EnvID; i = (i+1)%(NENV) ){
+		if(envs[i].env_status == ENV_RUNNABLE){
+			env_run(&envs[i]);
+		}
+		firstEnv = false;
+	}
+
+	if(e && e->env_status == ENV_RUNNING)
+		
+		env_run(e);
+  
 	// sched_halt never returns
 	sched_halt();
 }
